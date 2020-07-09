@@ -1,0 +1,536 @@
+.icon,
+.wrapper,
+.balance {
+    margin: 0 6rem;
+}
+
+.wrapper small,
+.balance small {
+    margin: 0 0 0 1rem;
+    color: #888;
+}
+
+.moment,
+.weight{
+    margin: 1rem;
+    padding: 2rem;
+    border: 2px solid #888;
+    border-radius: 2rem;
+    font-size: 3rem;
+    letter-spacing: 0.4rem;
+    font-family: Helvetica, Arial, sans-serif;
+    background: rgba(250,250,250,0.5);
+    outline: none;
+}
+
+.moment:focus,
+.weight:focus {
+    background: lightblue;    
+}
+
+.main {
+    background: #EEE;
+    border-radius: 2rem;
+    padding: 2rem;
+    margin-bottom: 20rem;
+}
+
+.range {
+    display: inline-block;
+    width: 100%;
+}
+
+.range .text{
+    padding: 2rem;
+    border: 2px solid #888;
+    border-radius: 2rem;
+    font-size: 3rem;
+    letter-spacing: 0.4rem;
+    font-family: Helvetica, Arial, sans-serif;
+    background: rgba(250,250,250,0.5);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.save label {
+    margin-left: 3rem;
+}
+
+.save .submit {
+    padding: 1rem 4rem;
+    margin-left: 3rem;
+    cursor: pointer;
+    color: #555;
+    width: auto;
+    font-size: 3rem;
+    border-radius: 1rem;
+    border: 2px solid #888;
+    background: #dadada;
+}
+
+.errorAlready {
+    color: #f00;
+    font-family: Arial,Helvetica, sans-serif;
+    font-size: 1.4rem;
+    margin-left: 3rem;
+    top: -1rem;
+    position: relative;
+}
+
+.range .error {
+    background: #eccaca;
+    border-color: #f00;
+    color: #f00;
+}
+
+.save .submit:focus,
+.save .submit:hover {
+    background: #e8ba70;
+    color: #000;
+    outline: none;
+}
+
+.save dl {
+    padding: 2rem 1rem 0;
+    margin: 0 2rem;
+    overflow: hidden;
+    color: #888;
+    font-size: 1.4rem;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.save dl dd {
+    margin-left: 0;
+}
+
+dd ul{
+    padding-left: 2rem;
+    margin-top: 0.4rem;
+}
+
+.schedule .range {
+    display: flex;
+}
+
+.runningCountDown .range {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.range.alignCenter {
+    align-items: center;
+}
+
+.schedule .range > div {
+    flex: 1 1 0;
+    align-self: top;
+}
+
+.schedule .right b {
+    margin-left: 2rem;
+    display: inline-block;
+    margin-top: 5.4rem;
+}
+
+.schedule .right b.noMargin {
+    margin-top: 0rem;
+}
+
+.schedule .range > div:first-of-type {
+    flex-grow: 6;
+    flex-shrink: 6;
+    flex-basis: 0;
+}
+
+
+.range label {
+    display: flex;
+    align-items: center;
+    padding: 4rem 1rem 0 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.range label.noPadding {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.range input {
+    float: left;
+    width: 100%;
+    margin: 0.5rem 1rem 1rem 0;
+}
+
+.range > span {
+    font-size: 2rem;
+    line-height: 5rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.range > span span {
+    color: #999;
+}
+
+.range u {
+    text-decoration: none;
+    border-bottom: 1px solid blue;
+    font-weight: bold;
+}
+
+.range b {
+    font-size: 3rem;
+    background:#fff;
+    border-radius: 1rem;
+    padding: 0.5rem 1rem;
+    margin: 0 0.5rem 0 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: normal;
+}
+
+.range b.water{
+    background: #a4d7f1;
+}
+
+.range b.flour{
+    background: #ceb192;
+}
+
+.saf {
+    margin-left: 1rem;
+    font-size: 1.4rem;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #666;
+}
+
+.saf b {
+    background: none;
+    margin-right: 0;
+    border: 1px dotted #000;
+    font-size: 2rem;
+}
+
+.modalHowLong {
+    display: inline-block;
+    border: 1px solid #888;
+    padding: 5px;
+    border-radius: 1rem;
+    position: relative;
+    cursor: pointer;
+}
+
+.modalHowLong:before{
+    content: "";
+    width: 15px;
+    height: 10px;
+    display: block;
+    background: #fff;
+    top: -5px;
+    right: -5px;
+    border: 1px solid #000;
+    position: absolute;
+    box-shadow: 1px 1px 0 #999;
+}
+
+.board {
+    position: fixed;
+    bottom: 0;
+    background: #eee;
+    width: calc(100% - 12rem);
+    margin: 0 6rem;
+    padding: 6rem 5rem 1rem;
+    box-sizing: border-box;
+    border-radius: 3rem 3rem 0 0;
+    box-shadow: 0 0 2rem #000;
+}
+
+.board div {
+    width: 100%;
+}
+
+.board .timeline {
+    background: #fff;
+    border-bottom: 1px solid #000;
+    height: 5rem;
+    position:relative;
+}
+
+
+.board .cycle {
+    height: 3rem;
+    background:#adadc1;
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.cycle .grid {
+    position: absolute;
+    height: 3rem;
+    border-left: 1px solid #ddd;
+    font-family: Helvetica, arial, sans-serif;
+    color: #ddd;
+    font-size: 1.4rem;
+    padding-left: 0.5rem;
+    line-height: 3rem;
+}
+
+.board .stripe {
+    height: 5rem;
+    position: absolute;
+    display: block;
+    cursor: pointer;
+    text-align: right;
+    font-size: 1.5rem;
+    box-sizing: border-box;
+    padding-right: 0.5rem;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 3;
+    color: #fff;   
+}
+
+.stripe1{background: #92924b;}
+.stripe2{background: #b1b188;}
+.stripe3{background: #e8ba71;}
+.stripe4{background: #c5c5bf;}
+.stripe5{background: #dedede;}
+
+
+
+.hover1 .marker2{z-index: 2;}
+.hover2 .marker3{z-index: 2;}
+.hover3 .marker4{z-index: 2;}
+.hover4 .marker5{z-index: 2;}
+.hover5 .marker1{z-index: 2;}
+
+.board .countdown {
+    height: 5rem;
+    z-index:1;
+    position: absolute;
+    display: block;
+    cursor: pointer;
+    text-align: right;
+    font-size: 1.5rem;
+    box-sizing: border-box;
+    padding-right: 0.5rem;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 3;
+    color: #fff;
+    width: 0;
+    border-left: 2px solid #f00;
+}
+
+.board .stripe:hover {
+    background: #bbbb2b;
+}
+
+
+.board .marker {
+    position: absolute;
+    transform: rotate(-45deg);
+    top: -3rem;
+    margin-left: -1rem;
+    width: auto;
+    padding: 0.5rem;
+    font-family: Helvetica, Arial, sans-serif;
+    transform-origin: left;
+    background: #fff;
+    box-shadow: 0px 2px 2px #555;
+}
+
+.board .marker1 {
+    transform-origin: right;
+    transform: rotate(45deg);
+    right: -1rem;
+}
+
+.board .marker span {
+    color: #888;
+    font-size: 1.2rem;
+}
+
+.board .saf {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    margin-left: 0;
+    width: auto;
+    height: 4rem;
+    padding: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 1rem solid #a74242;
+    margin-left: -4px;
+    transform-origin: top;
+}
+
+.board .saf:hover {
+ border-top-color: #fff;
+}
+
+.board .saf:hover:before {
+    opacity: 1;
+    z-index: 1;
+}
+
+.board .saf:before{
+    opacity: 0.3;
+    display: block;
+    background: #fff;
+    content: attr(title);
+    position: absolute;
+    bottom: 0;
+    height: 2rem;
+    font-family: Helvetica, Arial, sans-serif;
+    transform: rotate(-45deg);
+    top: -3rem;
+    transform-origin: left;
+}
+
+.link {
+    margin: 3rem 0;
+    border-radius: 1rem;
+    border: 2px solid #888;
+    background: #dadada;
+    display: flex;
+    align-items: center;
+}
+
+.copy {
+    background: url(../pics/copy.svg);
+    cursor: pointer;
+    background-size: 20%;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    padding: 0 2rem 0 3rem;
+}
+
+.linkField {
+    padding: 1rem 4rem;
+    cursor: pointer;
+    color: #555;
+    width: auto;
+    font-size: 2rem;
+    background: #eaeaea;
+    border: none;
+    border-radius: 1rem;
+    flex: 1 1 0;
+}
+
+.linkField:focus {
+    outline: none;
+    background: #f8ffbd;
+}
+
+.starter {
+    margin-top: 4rem;
+    border-top: 1px solid #888;
+    padding: 3rem 0;
+}
+
+.launcher {
+    display: flex;
+}
+
+.launcher .lnk {
+    text-decoration: underline;
+    color: #888;
+    cursor: pointer;
+}
+.launcher .lnk:hover {
+    color: #000;
+}
+
+.basicTxt {
+    line-height: 2;
+}
+
+.buttonStart {
+    border: 5px solid #a4d7f1;
+    border-radius: 50%;
+    width: 6rem;
+    height: 6rem;
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 0 3px #000;
+    background: #fff;
+}
+
+.buttonStart:before{
+    content: "";
+    position: absolute;
+    border-left: 2rem solid transparent;
+    border-right: 2rem solid transparent;
+    border-top: 4rem solid #a4d7f1;
+    transform: rotate(-90deg);
+    left: 1.5rem;
+    top: 1rem;
+}
+
+.buttonStart:hover{
+    border-color: #71aece;
+    
+}
+
+.buttonStart:hover:before {
+    border-top-color: #71aece;
+}
+
+.wrapperPlay {
+    padding: 0 1rem;
+    text-align: center;
+    margin: 0 1rem;
+    padding-bottom: 3rem;
+    border-radius: 2rem;
+    background: #ddd;
+}
+
+.wrapperPlay > span {
+    display: block;
+    margin-bottom: 3rem;
+    font-size: 3rem;
+}
+
+.wrapperPlay > span a {
+    color: #444;
+}
+
+.wrapperPlay > span > span {
+    color: #888;
+    font-size: 1.3rem;
+}
+
+@media all and (max-width:677px){
+    .balance,
+    .schedule,
+    .save {
+        margin: 0;
+    } 
+    .label{
+        text-align: center;
+    }
+    .board {
+        margin: 0;
+        width: 100%;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    .cycle .grid {
+        font-size: 1rem;
+        padding-left: 1px;
+    }
+    .link {
+        flex-direction: column;
+    }
+    .save label {
+        margin: 1rem 0;
+    }
+    .linkField {
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 0 0 1rem 1rem;
+        padding: 1rem;
+        font-size: 1.2rem;
+    }
+}

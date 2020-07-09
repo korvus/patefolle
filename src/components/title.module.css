@@ -1,0 +1,45 @@
+.title {
+    padding: 0 0 0 6rem;
+    max-width: 600px;
+    font-family: dayrom, Arial, Helvetica, sans-serif;
+    font-size: 4rem;
+    margin: 5rem 0;
+    position: relative;
+
+}
+
+.balance::before {
+  position: absolute;
+  background: url(../pics/balance.svg);
+  background-size: contain;
+  display: block;
+  height: 4rem;
+  width: 4rem;
+  content:"";
+  left: 0;
+  top: 0rem;
+}
+
+.timer::before {
+  position: absolute;
+  background: url(../pics/watch.svg);
+  background-size: contain;
+  display: block;
+  height: 4rem;
+  width: 4rem;
+  content:"";
+  left: 0;
+  top: 0rem;
+}
+
+.save::before {
+  position: absolute;
+  background: url(../pics/save.svg);
+  background-size: contain;
+  display: block;
+  height: 5rem;
+  width: 5rem;
+  content:"";
+  left: 0;
+  top: 0rem;
+}
