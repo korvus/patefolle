@@ -45,7 +45,8 @@ class Timer extends Component {
             startProofingHour: new Date(),
             hoveredStripe: 0,
             potentialStart: "",
-            currentCountDown: false
+            currentCountDown: false,
+            worker: () => {}
         };
     }
 
@@ -278,11 +279,12 @@ class Timer extends Component {
             const listSaf = this.setTimeOfSaF(listSaF.length, tmpStep2bis);
 
             const milestones = [start, step1, step2, step3, step4, step5];
-            navigator.serviceWorker.controller.postMessage({
+
+            this.state.worker.active.postMessage({
                 type: "LAUNCH",
                 milestones: milestones,
-                saf: listSaf
-            });
+                saf: listSaf    
+            })
 
             this.startTime();
         });
@@ -296,7 +298,9 @@ class Timer extends Component {
                 }
                 return permission;
             })
-            .then(() => navigator.serviceWorker.register('/sw.js'))
+            .then(() => navigator.serviceWorker.register('/sw.js')).then((worker) => {
+                this.setState({ worker });
+            })
             .catch(console.error);
             /* Listen to service Worker */
             navigator.serviceWorker.onmessage = (event) => {
@@ -487,10 +491,10 @@ class Timer extends Component {
                                 <span><u>{humanFermentation}</u> <span>-></span> Start pre-shaping at </span><br />
                                 <label className={timerStyles.noPadding} htmlFor="fermentation">
                                     <span role="presentation" onClick={() => this.displayModalHowLong()} className={timerStyles.modalHowLong}>
-                                        Add some Stretch &amp; Fold steps
+                                        Add some Stretch &amp; Fold
                                         <Ext title="Stretch &amp; Fold" link="https://www.youtube.com/watch?v=Lz9CO1PJ0sM" />
                                     </span> 
-                                    {safNumber > 0 && <span className={timerStyles.saf}><b>{safNumber}</b> stretch &amp; fold</span>}
+                                    {safNumber > 0 && <span className={timerStyles.saf}><b>{safNumber}</b></span>}
                                 </label>
                             </div>
                             <div className={timerStyles.right}>
@@ -499,7 +503,7 @@ class Timer extends Component {
                         </div>
                         <div className={`${timerStyles.range} ${timerStyles.alignCenter}`}>
                             <div>
-                                <span>+ 30 minutes rests <span>-></span> shape at...</span><Ext title="shaping &amp; PreShaping" link="https://www.youtube.com/watch?v=8uz97MZZmRg" />
+                                <span className={timerStyles.label}>+ 30 minutes rests <span>-></span> shape at...</span><Ext title="shaping &amp; PreShaping" link="https://www.youtube.com/watch?v=8uz97MZZmRg" />
                             </div>
                             <div className={timerStyles.right}>
                                 <b className={timerStyles.noMargin}>{extractMinutsFromDate(timeAfterFermentation)}</b>

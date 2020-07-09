@@ -27,3 +27,11 @@ section {
 .hide {
     display: none;
 }
+
+
+@media all and (max-width:677px){
+    section {
+        padding: 0 1rem;
+    }
+}
+  

@@ -137,9 +137,7 @@ dd ul{
 }
 
 .schedule .range > div:first-of-type {
-    flex-grow: 6;
-    flex-shrink: 6;
-    flex-basis: 0;
+    flex: 6 6 0;
 }
 
 
@@ -506,15 +504,38 @@ dd ul{
     .schedule,
     .save {
         margin: 0;
-    } 
+    }
     .label{
         text-align: center;
     }
+    .schedule .range {
+        flex-direction: column;
+    }
+
+    .schedule .right b{
+        margin-left: 0;
+        margin-top: 1.4rem;
+    }
+
+    .range.alignCenter{
+        align-items: start;
+        margin-top: 3rem;
+    }
+
+    .wrapperPlay > span > span {
+        display: none;
+    }
+
+    .label{
+        display: block;
+        margin-bottom: 1rem;
+    }
+
     .board {
         margin: 0;
         width: 100%;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
     .cycle .grid {
         font-size: 1rem;
@@ -532,5 +553,14 @@ dd ul{
         border-radius: 0 0 1rem 1rem;
         padding: 1rem;
         font-size: 1.2rem;
+    }
+    .board .marker {
+        font-size: 1.4rem;
+        border-radius: 3rem;
+        box-shadow: none;
+        border: 1px solid #999;
+    }
+    .board .marker span {
+        display: none;
     }
 }

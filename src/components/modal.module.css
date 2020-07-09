@@ -126,5 +126,13 @@
     .wrapperModale {
         display: none;
     }
+
+    .modal {
+        width: 90%;
+    }
+
+    .range {
+        padding: 0;
+    }
 }
   
