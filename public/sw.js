@@ -43,7 +43,6 @@ const findClosestStep = (arrayOfSteps) => {
            closest = d;
            snap = i - 1;
         }
-        // console.log("i, arrayOfSteps.length", i, arrayOfSteps.length)
         // console.log("arrayOfSteps", arrayOfSteps, arrayOfSteps[arrayOfSteps.length - 1]);
         if(now > arrayOfSteps[arrayOfSteps.length - 1]){
             snap = arrayOfSteps.length - 1;
