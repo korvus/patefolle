@@ -1,46 +1,37 @@
-import React, {Component, Fragment} from "react";
+import React, {Fragment, useState} from "react";
 import { convertMinutsToHuman } from "../functions/tools.js";
 import "../styles/recipes.css";
 
-class Recipes extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            existing: []
-        };
+const getAlreadyRegistred = () => {
+    let newExisting = [];
+    if(localStorage.getItem("recipes") !== null){
+      newExisting = JSON.parse(localStorage.getItem("recipes")).recipes;
     }
+    return newExisting;
+}
 
-    componentDidMount(){
-        this.getAlreadyRegistred();
-    }
+const Recipes = (props) => {
 
-    getAlreadyRegistred = () => {
-        if(localStorage.getItem("recipes") !== null){
-          const existing = JSON.parse(localStorage.getItem("recipes")).recipes;
-          this.setState({existing});
-        }
-    }
+    const recipeInsideStorage = getAlreadyRegistred();
 
-    deleteRecipe = (e) => {
-        const { existing } = this.state;
+    const [existing, setExisting] = useState(recipeInsideStorage);
+
+    const deleteRecipe = (e) => {
         const keyId = e.target.dataset.index;
         if (window.confirm("Are you sure to delete this recipe?")) { 
             existing.splice(keyId, 1);
-            // existing
             const initObj = {recipes: existing}
             const toSave = JSON.stringify(initObj);
             localStorage.setItem("recipes", toSave);
-            this.setState({ existing });
+            setExisting(existing);
         }
     }
 
-    render() {
+    const { trigger } = props;
 
-        const { existing } = this.state;
-        const { trigger }= this.props;
-
-        const recipe = [];
-        for (let a = 0; a < existing.length; a++) {
+    const recipe = [];
+    
+    for (let a = 0; a < existing.length; a++) {
 
             const title = `${existing[a].title} :
     - ${existing[a].weight}g 
@@ -61,21 +52,21 @@ class Recipes extends Component {
                 {existing[a].saf && existing[a].saf.length > 0  && `${existing[a].saf.length} stretch & fold ● `}
                 {convertMinutsToHuman(existing[a].proofing)} proofing ]
             </span>
-            <span data-index={a} role="presentation" onFocus={(e) => this.deleteRecipe(e)} onClick={(e) => this.deleteRecipe(e)} title="delete this recipe" className="trash">Trash</span>
+            <span data-index={a} role="presentation" onFocus={(e) => deleteRecipe(e)} onClick={(e) => deleteRecipe(e)} title="delete this recipe" className="trash">Trash</span>
           </li>)
-        }
-
-        return (
-            <Fragment>
-                {existing.length > 0 && <section className="existing">
-                    <h2>Your recipes:</h2>
-                    <ul>
-                        {recipe}
-                    </ul>
-                </section>}
-            </Fragment>
-        )
     }
+
+    return (
+        <Fragment>
+            {existing.length > 0 && <section className="existing">
+                <h2>Your recipes:</h2>
+                <ul>
+                    {recipe}
+                </ul>
+            </section>}
+        </Fragment>
+    )
+
 };
 
 export default Recipes;

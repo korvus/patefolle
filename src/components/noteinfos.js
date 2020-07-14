@@ -1,31 +1,25 @@
-import React, {Component} from "react";
-import noteStyle from "./note.module.css";
+import React, {useState} from "react";
+import noteStyle from "../styles/note.module.css";
 
-class Note extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            display: false
-        };
+const Note = (props) => {
+    const [display, setDisplay] = useState(false);
+
+    const manageHover = () => {
+        setDisplay(true);
     }
 
-    manageHover = () => {
-        this.setState({display: true});
+    const closeTooltip = () => {
+        setDisplay(false);
     }
 
-    closeTooltip = () => {
-        this.setState({display: false});
-    }
+    const {content, align} = props;
 
-    /* {/*onMouseLeave={() => this.closeTooltip()}} */
-    render() {
-        const {content, align} = this.props;
-        const {display} = this.state;
-        return (<div className={noteStyle.wrapperInfobulle}>
+    return (
+        <div className={noteStyle.wrapperInfobulle}>
             <div role="tooltip" className={`${noteStyle.contentModal} ${display ? "" : "hide"} ${align && noteStyle[align]}`}>{content}</div>
-            <div role="presentation" className={noteStyle.questionMark} onFocus={() => this.manageHover()} onMouseOver={() => this.manageHover()} onMouseLeave={() => this.closeTooltip()}> ? </div>
-        </div>)
-    }
+            <div role="presentation" className={noteStyle.questionMark} onFocus={() => manageHover()} onMouseOver={() => manageHover()} onMouseLeave={() => closeTooltip()}> ? </div>
+        </div>
+    )
 };
 
 export default Note;

@@ -473,7 +473,7 @@ class Timer extends Component {
                                     Yeast top is reached after...
                                     <Ext title="How to prove your yeast" link="https://www.youtube.com/watch?v=Z9HIWK08J3E" />
                                 </label>
-                                <input disabled={currentCountDown} value={zenith} type="range" aria-labelledby="sourdough" onChange={(e) => this.rangeYeast(e)} id="sourdough" min="30" max="600" step="5" />
+                                <input disabled={currentCountDown} value={zenith} type="range" aria-labelledby="sourdough" onChange={(e) => this.rangeYeast(e)} id="sourdough" min="30" max="720" step="5" />
                                 <span><u>{convertMinutsToHuman(zenith)}</u></span>
                             </div>
                             <div className={timerStyles.right}>

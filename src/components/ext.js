@@ -1,5 +1,5 @@
 import React from "react";
-import lkVideo from "./ext.module.css";
+import lkVideo from "../styles/ext.module.css";
 
 export default function Ext(props) {
     return (

@@ -1,5 +1,5 @@
 import React from "react";
-import ModaleStyle from "./modal.module.css";
+import ModaleStyle from "../styles/modal.module.css";
 
 export default function Modale(props) {
     const {display, close, data} = props;

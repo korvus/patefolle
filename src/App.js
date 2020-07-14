@@ -8,6 +8,7 @@ import Timer from "./components/timer.js";
 import "./styles/global.css";
 import Recipes from "./components/recipes.js";
 
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -102,7 +103,6 @@ class Home extends Component {
       document.body.style = `background: #eee; background: linear-gradient(180deg, #a4d7f1 0%, #a4d7f1 ${percentH}%, #ceb192 ${parseInt(percentH) + 5}%, #ceb192 100%) fixed`;
       //this.calculateTotalWeight();
     });
-    // On calcule d'abord le poid total des ingrédients, en retirant l'eau du levain
   }
 
   calculateSourdough = () => {
@@ -177,6 +177,7 @@ class Home extends Component {
 
   clickSavedRecipe = (e) => {
     const { currentCountDown } = this.state;
+    // console.log("currentCountDown", currentCountDown);
     const keyIndex = e.target.dataset.index;
     const recipesRegistered = JSON.parse(localStorage.getItem("recipes")).recipes;
     const datas = recipesRegistered[keyIndex];
