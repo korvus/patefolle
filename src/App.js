@@ -4,6 +4,7 @@ import Note from "./components/noteinfos";
 import { Leaven, Hydration, Salt } from "./components/infos.en.js";
 import { roundDecimal } from "./functions/tools.js";
 import style from "./styles/wrapper.module.css";
+import co from "./styles/quantities.module.css";
 import Timer from "./components/timer.js";
 import "./styles/global.css";
 import Recipes from "./components/recipes.js";
@@ -26,6 +27,7 @@ class Home extends Component {
       weightSalt: 10,
       ratioFlourAbsolute: 0,
       currentCountDown: false,
+      lockedWeight: true,
       durationDefault: {
         zenith: 300,
         autolyse: 90,
@@ -58,13 +60,14 @@ class Home extends Component {
     }
   }
 
+  /*
   calculateTotalWeight = () => {
     const { weightSalt, weightW, weightF, weightS } = this.state;
     const weightTotal = Math.round(weightSalt + weightW + weightF + weightS);
 
     this.displayKilogram(weightTotal);
-
   }
+  */
 
   setServiceWorker = () => {
     if ('serviceWorker' in navigator) {
@@ -92,6 +95,7 @@ class Home extends Component {
     }
   }
 
+  
   calculateWaterWeight = () => {
     const { percentH, weightF } = this.state;
     const halfSoudrough = this.state.weightS/2;
@@ -117,22 +121,63 @@ class Home extends Component {
     });
   }
 
+  setUpFlour = (e) => {
+    const newWeightF = parseInt(e.target.value);
+    this.setState({
+      weightF: newWeightF
+    }, () => {
+      this.calculateFromLeavin();
+    })
+  }
+
+  calculateFromFlour = () => {
+    const {weightS, weightF, percentH, percentSalt} = this.state;
+    const halfWeightLeavin = Math.round(weightS/2);
+    const weightFlourAbsolute = weightF + halfWeightLeavin;
+    const weightWaterAbsolute = (weightFlourAbsolute * percentH) / 100;
+    const weightW = Math.round(weightWaterAbsolute - halfWeightLeavin);
+    const weightSalt = (weightF + halfWeightLeavin)*percentSalt/100;
+    const WeightTotal = Math.round(weightW + weightF + weightS + weightSalt);
+    this.setState({
+      weightW, weight: WeightTotal, weightSalt
+    });
+  }
+
+  calculateFromLeavin = () => {
+    const { percentS, weightF } = this.state;
+    const percentToUse = percentS/2;
+    const weightS = Math.round((weightF*percentToUse) / (100 - percentToUse));
+    this.setState({ weightS: weightS*2 }, () => {
+      this.calculateFromFlour();
+    });
+  }
+
+  setUpLockedWeight = () => {
+    this.setState({ lockedWeight: !this.state.lockedWeight })
+  }
+
   setUpValue = (e, field) => {
     if(field === "sourdough"){
       this.setState({
         percentS: e.target.value,
-        // changeRatio: true,
       }, () => {
-        this.calculateSourdough()
+        if(this.state.lockedWeight){
+          this.calculateSourdough();
+        } else {
+          this.calculateFromLeavin();
+        }
       })
     }
 
     if(field === "hydration"){
       this.setState({
         percentH: e.target.value,
-        // changeRatio: true,
       }, () => {
-        this.calculateSourdough()
+        if(this.state.lockedWeight){
+          this.calculateSourdough();
+        } else {
+          this.calculateFromFlour();
+        }
       })
     }
 
@@ -156,6 +201,7 @@ class Home extends Component {
     })
 
   }
+
 
   setData = (params) => {
     this.setState({
@@ -224,7 +270,8 @@ class Home extends Component {
       weightW,
       weightF,
       weightSalt,
-      durationDefault
+      durationDefault,
+      lockedWeight
     } = this.state;
     weightS = Math.round(weightS);
 
@@ -237,13 +284,6 @@ class Home extends Component {
 
     return (
       <div>
-        {/*
-        <Helmet
-          bodyAttributes={{
-              style: `background: #eee; background: linear-gradient(180deg, #a4d7f1 0%, #a4d7f1 ${percentH}%, #ceb192 ${parseInt(percentH) + 5}%, #ceb192 100%) fixed;`
-          }}
-        />
-        */}
         <Recipes trigger={this.clickSavedRecipe} />
         <section>
           <Title content="Balance" class="balance" />
@@ -252,7 +292,9 @@ class Home extends Component {
               <label htmlFor="weight">
                 > For a total dough weight of
               </label>
-              <input type="number" value={weight} min="0" max="10000" step="10" aria-labelledby="weight" onChange={(e) => this.setUpByWeight(e)} id="weight" className={style.weight} />g to bake.
+              <input type="number" value={weight} min="0" max="10000" step="10" aria-labelledby="weight" onChange={(e) => this.setUpByWeight(e)} id="weight" className={style.weight} />
+              <sup onClick={e => this.setUpLockedWeight()} className={`${co.lockIcon} ${lockedWeight ? co.locked : co.unlocked}`}>lock</sup>
+              g to bake.
               {kilo && <small>{`(${kilogram}kg)`}</small>}
             </div>
             <div className={style.main}>
@@ -268,11 +310,20 @@ class Home extends Component {
                     {percentH}% Hydration <Note content={<Hydration />} />
                 </label>
                 <input value={percentH} type="range" aria-labelledby="hydration" onChange={(e) => this.setUpValue(e, "hydration")} id="hydration" min="0" max="100" />
-                <span>
-                   <b className={style.flour}>{weightF}g</b> Flour <br />
-                   <b className={style.water}>{weightW}ml</b> water<br />
-                   <b>{weightSalt}g</b> salt <Note content={<Salt />} />
-                </span> 
+                <div className={co.blocks}>
+                  <span className={co.flour}>
+                    <span>
+                    <b className={style.flour}>{weightF}g</b>
+                    <sup onClick={e => this.setUpLockedWeight()} className={`${co.lockIconFlour} ${lockedWeight ? co.unlocked : co.locked}`}>lock</sup>
+                     Flour
+                    </span>
+                    {!lockedWeight &&
+                      <input value={weightF} type="range" aria-labelledby="sourdough" onChange={(e) => this.setUpFlour(e)} id="flour" min="0" max="1500" step="10" />
+                    }
+                  </span>
+                  <span><b className={style.water}>{weightW}ml</b> water</span>
+                  <span><b>{weightSalt}g</b> salt <Note content={<Salt />} /></span>
+                </div> 
               </div>
             </div>
             </div>
