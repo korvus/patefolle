@@ -1,0 +1,22 @@
+.wrapper {
+    float: right;
+    margin-bottom: 2rem;
+}
+
+.wrapper span{
+    font-size: 1.2rem;
+    color: #fff;
+    float: left;
+    padding: 0 2rem;
+    border-left: 1px solid #fff;
+    cursor: pointer;
+}
+
+.wrapper span:first-child {
+    border-left: none;
+}
+
+.current {
+    text-decoration: underline;
+    font-weight: bold;
+}

@@ -1,6 +1,7 @@
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useState, useContext} from "react";
 import { convertMinutsToHuman } from "../functions/tools.js";
 import "../styles/recipes.css";
+import { Text, FuncText, LanguageContext } from "../containers/language";
 
 const getAlreadyRegistred = () => {
     let newExisting = [];
@@ -14,11 +15,12 @@ const Recipes = (props) => {
 
     const recipeInsideStorage = getAlreadyRegistred();
 
+    const { userLanguage } = useContext(LanguageContext);
     const [existing, setExisting] = useState(recipeInsideStorage);
 
     const deleteRecipe = (e) => {
         const keyId = e.target.dataset.index;
-        if (window.confirm("Are you sure to delete this recipe?")) { 
+        if (window.confirm(FuncText("sureToDelete"))) { 
             existing.splice(keyId, 1);
             const initObj = {recipes: existing}
             const toSave = JSON.stringify(initObj);
@@ -35,31 +37,33 @@ const Recipes = (props) => {
 
             const title = `${existing[a].title} :
     - ${existing[a].weight}g 
-    - ${existing[a].percentHydra}% hydratation
-    - ${existing[a].percentLeavin}% leavin 
+    - ${existing[a].percentHydra}% ${FuncText("hydration")}
+    - ${existing[a].percentLeavin}% ${FuncText("leaven")} 
     ●˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗●
-    - ${convertMinutsToHuman(existing[a].zenith)} raising leavin 
-    - ${convertMinutsToHuman(existing[a].autolyse)} autolyse 
-    - ${convertMinutsToHuman(existing[a].fermentation)} bulk fermentation ${existing[a].saf && existing[a].saf.length > 0  && `ìncluding ${existing[a].saf.length} stretch & fold`} 
-    - ${convertMinutsToHuman(existing[a].proofing)} proofing]`;
+    - ${convertMinutsToHuman(existing[a].zenith)} ${FuncText("raisingLeavin")} 
+    - ${convertMinutsToHuman(existing[a].autolyse)} ${FuncText("ofAutolyse")}
+    - ${convertMinutsToHuman(existing[a].fermentation)} ${FuncText("BulkFermentation")} ${existing[a].saf && existing[a].saf.length > 0  && `${FuncText("including")} ${existing[a].saf.length} ${FuncText("StretchAFold")}`} 
+    - ${convertMinutsToHuman(existing[a].proofing)} ${FuncText("proofing")}`;
 
 
           recipe.push(
           <li className="recipe" key={a}>
             <span data-index={a} role="presentation" onFocus={(e) => trigger(e)} onClick={(e) => trigger(e)} title={title} className="recipe">
-                <b>{existing[a].title}</b> - [ {existing[a].weight}g ● {existing[a].percentHydra}% hydratation ● {existing[a].percentLeavin}% leavin ]
-                [ {convertMinutsToHuman(existing[a].zenith)} raising leavin ● {convertMinutsToHuman(existing[a].autolyse)} autolyse ● {convertMinutsToHuman(existing[a].fermentation)} bulk fermentation ●{` `} 
-                {existing[a].saf && existing[a].saf.length > 0  && `${existing[a].saf.length} stretch & fold ● `}
-                {convertMinutsToHuman(existing[a].proofing)} proofing ]
+                <b>{existing[a].title}</b> - [ {existing[a].weight}g ● {existing[a].percentHydra}% {FuncText("hydration")} ● {existing[a].percentLeavin}% {FuncText("leaven")} ]
+                [ {convertMinutsToHuman(existing[a].zenith)} {FuncText("raisingLeavin")} ● {convertMinutsToHuman(existing[a].autolyse)} {FuncText("ofAutolyse")} ● {convertMinutsToHuman(existing[a].fermentation)} {FuncText("BulkFermentation")} ●{` `} 
+                {existing[a].saf && existing[a].saf.length > 0 && `${existing[a].saf.length} ${FuncText("StretchAFold")} ● `}
+                {convertMinutsToHuman(existing[a].proofing)} {FuncText("proofing")} ]
             </span>
-            <span data-index={a} role="presentation" onFocus={(e) => deleteRecipe(e)} onClick={(e) => deleteRecipe(e)} title="delete this recipe" className="trash">Trash</span>
+            <span data-index={a} role="presentation" onFocus={(e) => deleteRecipe(e)} onClick={(e) => deleteRecipe(e)} title={FuncText("deleteThisRecipe")} className="trash">Trash</span>
           </li>)
     }
 
     return (
         <Fragment>
             {existing.length > 0 && <section className="existing">
-                <h2>Your recipes:</h2>
+                <h2>
+                    <Text tid="YourRecipes" />
+                </h2>
                 <ul>
                     {recipe}
                 </ul>

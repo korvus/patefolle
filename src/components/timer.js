@@ -5,8 +5,9 @@ import Modal from "./modal"
 import Note from "./noteinfos";
 import Ext from "./ext.js";
 import Save from "./save.js";
-import { Proofing, Bulkproofing } from "./infos.en.js";
+import { Proofing, Bulkproofing } from "./infos.js";
 import { convertMinutsToHuman, extractMinutsFromDate, ExtractMinutsAndSecondsFromDate, twoDigits, decimalToSeconds } from "../functions/tools.js";
+import { Text, FuncText } from '../containers/language';
 
 function checkTime(i) {
   if (i < 10) {
@@ -73,7 +74,7 @@ class Timer extends Component {
         // if(this.state.currentCountDown){
         setTimeout(() => {
             this.startTime()
-        }, 500);
+        }, 2000);
         /*} else {
             clearTimeout(temps);
         }*/
@@ -449,16 +450,17 @@ class Timer extends Component {
                 <div className={`${timerStyles.wrapper} ${timerStyles.schedule} ${currentCountDown ? `${timerStyles.runningCountDown}` : ""}`}>
                     <div className={timerStyles.label}>
                         <label htmlFor="moment">
-                            Countdown start
+                            <Text tid="countdownStart" />
                         </label>
-                        <input type="time" value={`${hourNow}:${minutesNow}`} aria-labelledby="moment" onChange={(e) => this.changeHour(e)} id="moment" className={timerStyles.moment} />when you feed your leaven.
+                        <input type="time" value={`${hourNow}:${minutesNow}`} aria-labelledby="moment" onChange={(e) => this.changeHour(e)} id="moment" className={timerStyles.moment} />
+                        <Text tid="whenStartCD" />
                     </div>
                     <div className={timerStyles.main}>
                         <div className={timerStyles.range}>
                             <div className="left">
                                 <label htmlFor="autolyse">
-                                    autolysis timer
-                                    <Ext title="autolyse or not autolyse" link="https://www.youtube.com/watch?v=XIaAQRJW9n8" />
+                                    <Text tid="autolysisTimer" />
+                                    <Ext title={FuncText("autolyseTtl")} link={FuncText("autolyseYoutube")} />
                                 </label>
                                 <input value={autolyse} disabled={currentCountDown} type="range" aria-labelledby="autolyse" onChange={(e) => this.setUpAutolyse(e.target.value)} id="autolyse" min="0" max={limitAutolyse} />
                                 <span><u>{convertMinutsToHuman(autolyse)}</u></span> 
@@ -470,8 +472,8 @@ class Timer extends Component {
                         <div className={timerStyles.range}>
                             <div className="left">
                                 <label htmlFor="yeast">
-                                    Yeast top is reached after...
-                                    <Ext title="How to prove your yeast" link="https://www.youtube.com/watch?v=Z9HIWK08J3E" />
+                                    <Text tid="yeastTopReached" />
+                                    <Ext title={FuncText("YeastTtl")} link={FuncText("yeastTopYoutube")} />
                                 </label>
                                 <input disabled={currentCountDown} value={zenith} type="range" aria-labelledby="sourdough" onChange={(e) => this.rangeYeast(e)} id="sourdough" min="30" max="720" step="5" />
                                 <span><u>{convertMinutsToHuman(zenith)}</u></span>
@@ -483,16 +485,18 @@ class Timer extends Component {
                         <div className={timerStyles.range}>
                             <div className="left">
                                 <label htmlFor="fermentation">
-                                    Bulk Fermentation duration... 
-                                    <Ext title="When is Dough Fully Fermented" link="https://www.youtube.com/watch?v=5nrASfyphpU" />
+                                    <Text tid="bulkFermentationDuration" />
+                                    <Ext title={FuncText("bulkFermentationttl")} link={FuncText("bulkFermentationLink")} />
                                     <Note content={<Bulkproofing />} />
                                 </label>
                                 <input disabled={currentCountDown} value={fermentation} type="range" aria-labelledby="fermentation" onChange={(e) => this.changeFermentationDuration(e)} id="fermentation" min="120" max="1200" step="5" />
-                                <span><u>{humanFermentation}</u> <span>-></span> Start pre-shaping at </span><br />
+                                <span><u>{humanFermentation}</u> <span>-></span>
+                                    <Text tid="startPreShaping" />
+                                </span><br />
                                 <label className={timerStyles.noPadding} htmlFor="fermentation">
                                     <span role="presentation" onClick={() => this.displayModalHowLong()} className={timerStyles.modalHowLong}>
-                                        Add some Stretch &amp; Fold
-                                        <Ext title="Stretch &amp; Fold" link="https://www.youtube.com/watch?v=Lz9CO1PJ0sM" />
+                                        <Text tid="addSomeSaF" />
+                                        <Ext title={FuncText("StretchAndFoldttl")} link={FuncText("safLink")} />
                                     </span> 
                                     {safNumber > 0 && <span className={timerStyles.saf}><b>{safNumber}</b></span>}
                                 </label>
@@ -503,7 +507,11 @@ class Timer extends Component {
                         </div>
                         <div className={`${timerStyles.range} ${timerStyles.alignCenter}`}>
                             <div>
-                                <span className={timerStyles.label}>+ 30 minutes rests <span>-></span> shape at...</span><Ext title="shaping &amp; PreShaping" link="https://www.youtube.com/watch?v=8uz97MZZmRg" />
+                                <span className={timerStyles.label}>
+                                    <Text tid="restDough" />
+                                    <span> -> </span> 
+                                    <Text tid="shapingStart" />
+                                    </span><Ext title={FuncText("shapingAndPreshappingttl")} link={FuncText("shapingLink")} />
                             </div>
                             <div className={timerStyles.right}>
                                 <b className={timerStyles.noMargin}>{extractMinutsFromDate(timeAfterFermentation)}</b>
@@ -512,12 +520,14 @@ class Timer extends Component {
                         <div className={timerStyles.range}>
                             <div className="left">  
                                 <label htmlFor="proofing">
-                                    Proofing 
-                                    <Ext title="When is Dough Fully Fermented" link="https://www.youtube.com/watch?v=6oAfl1u0fIw" />
+                                    <Text tid="Proofing" />
+                                    <Ext title={FuncText("fermentedTtl")} link={FuncText("fermentedLink")} />
                                     <Note content={<Proofing />}/>
                                 </label>
                                 <input disabled={currentCountDown} value={proofingMinuts} type="range" aria-labelledby="proofing" onChange={(e) => this.changeProofing(e)} id="proofing" min="120" max="1200" step="5" />
-                                <span><u>{convertMinutsToHuman(proofingMinuts)}</u> <span>-></span> Start bake at...</span>
+                                <span><u>{convertMinutsToHuman(proofingMinuts)}</u> <span>-></span> 
+                                <Text tid="startBakeAt" />
+                                </span>
                             </div>
                             <div className={timerStyles.right}>
                             <b>{extractMinutsFromDate(startProofingHour)}</b>
@@ -526,13 +536,13 @@ class Timer extends Component {
                         {currentCountDown === false && 
                             <div className={timerStyles.starter}>
                                 <div className={timerStyles.launcher}>
-                                    <div className={timerStyles.basicTxt}>Launch the timer from </div>
+                                    <div className={timerStyles.basicTxt}><Text tid="LaunchTimerFrom" /></div>
                                     <div className={timerStyles.wrapperPlay}>
-                                        <span>now <span>({potentialStart})</span></span>
+                                        <span><Text tid="now" /> <span>({potentialStart})</span></span>
                                         <div role="presentation" aria-labelledby="launch" id="launch" onFocus={() => this.launchWW(new Date())} onClick={() => this.launchWW(new Date())} className={timerStyles.buttonStart} />
                                     </div>
                                     {toolate === false && <Fragment>
-                                        <div className={timerStyles.basicTxt}> or </div>
+                                        <div className={timerStyles.basicTxt}> <Text tid="or" /> </div>
                                         <div className={timerStyles.wrapperPlay}> 
                                             <span><a href="#defineSchedule">{`${hourNow}:${minutesNow}`}</a></span>
                                             <div role="presentation" aria-labelledby="launch" id="launch" onFocus={() => this.launchWW(now)} onClick={() => this.launchWW(now)} className={timerStyles.buttonStart} />
@@ -566,11 +576,21 @@ class Timer extends Component {
                 
                     {currentCountDown && <div className={`${timerStyles.countdown}`} style={{"left": `${countDownPercent}%`}}></div>}
 
-                    <div onMouseOver={() => this.showHour(5)} onFocus={() => this.showHour(5)} className={`${timerStyles.stripe} ${timerStyles.stripe1}`} title="proofing" style={{"width": "100%"}}>Proofing</div>
-                    <div onMouseOver={() => this.showHour(4)} onFocus={() => this.showHour(4)} className={`${timerStyles.stripe} ${timerStyles.stripe2}`} title="dough rest" style={{"width": `${shapingPercent}%`}}>Dough rest</div>
-                    <div onMouseOver={() => this.showHour(3)} onFocus={() => this.showHour(3)} className={`${timerStyles.stripe} ${timerStyles.stripe3}`} title="bulk fermentatio" style={{"width": `${preshapingPercent}%`}}>Bulk fermentation</div>
-                    <div onMouseOver={() => this.showHour(2)} onFocus={() => this.showHour(2)} className={`${timerStyles.stripe} ${timerStyles.stripe4}`} title="autolyse" style={{"width": `${AddLeavinPercent}%`}}>Autolyse</div>
-                    <div onMouseOver={() => this.showHour(1)} onFocus={() => this.showHour(1)} className={`${timerStyles.stripe} ${timerStyles.stripe5}`} title="leavin" style={{"width": `${createDoughPercent}%`}}>Leavin</div>
+                    <div title={FuncText("Proofing")} onMouseOver={() => this.showHour(5)} onFocus={() => this.showHour(5)} className={`${timerStyles.stripe} ${timerStyles.stripe1}`} style={{"width": "100%"}}>
+                        <Text tid="Proofing" />
+                    </div>
+                    <div title={FuncText("doughRest")} onMouseOver={() => this.showHour(4)} onFocus={() => this.showHour(4)} className={`${timerStyles.stripe} ${timerStyles.stripe2}`} style={{"width": `${shapingPercent}%`}}>
+                        <Text tid="doughRest" />
+                    </div>
+                    <div title={FuncText("bulkFermentation")} onMouseOver={() => this.showHour(3)} onFocus={() => this.showHour(3)} className={`${timerStyles.stripe} ${timerStyles.stripe3}`} style={{"width": `${preshapingPercent}%`}}>
+                        <Text tid="bulkFermentation" />
+                    </div>
+                    <div title={FuncText("autolyse")} onMouseOver={() => this.showHour(2)} onFocus={() => this.showHour(2)} className={`${timerStyles.stripe} ${timerStyles.stripe4}`} style={{"width": `${AddLeavinPercent}%`}}>
+                        <Text tid="autolyse" />
+                    </div>
+                    <div title={FuncText("leavin")} onMouseOver={() => this.showHour(1)} onFocus={() => this.showHour(1)} className={`${timerStyles.stripe} ${timerStyles.stripe5}`} style={{"width": `${createDoughPercent}%`}}>
+                        <Text tid="leavin" />
+                    </div>
 
                     <span>{timeTotal}</span>
                 

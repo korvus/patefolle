@@ -1,11 +1,13 @@
 import React, {Component} from "react"
 import Title from "./components/title"
 import Note from "./components/noteinfos";
-import { Leaven, Hydration, Salt } from "./components/infos.en.js";
+import { Leaven, Hydration, Salt } from "./components/infos.js";
 import { roundDecimal } from "./functions/tools.js";
 import style from "./styles/wrapper.module.css";
 import co from "./styles/quantities.module.css";
 import Timer from "./components/timer.js";
+import { LanguageProvider, Text } from './containers/language';
+import LanguageSelector from "./components/languageSelector.js";
 import "./styles/global.css";
 import Recipes from "./components/recipes.js";
 
@@ -60,15 +62,6 @@ class Home extends Component {
     }
   }
 
-  /*
-  calculateTotalWeight = () => {
-    const { weightSalt, weightW, weightF, weightS } = this.state;
-    const weightTotal = Math.round(weightSalt + weightW + weightF + weightS);
-
-    this.displayKilogram(weightTotal);
-  }
-  */
-
   setServiceWorker = () => {
     if ('serviceWorker' in navigator) {
         Notification.requestPermission(permission => {
@@ -79,7 +72,7 @@ class Home extends Component {
         })
         .then(() => navigator.serviceWorker.register('/sw.js'))
         .catch(console.error);
-        /* Listen to service Worker */
+        // Listen to service Worker
         navigator.serviceWorker.onmessage = (event) => {
             if (event.data) {
               if(event.data.status === "RUNNING"){
@@ -260,7 +253,7 @@ class Home extends Component {
   }
 
   render() {
-    var {
+    let {
       weight,
       kilo,
       kilogram,
@@ -283,31 +276,34 @@ class Home extends Component {
     }
 
     return (
-      <div>
+      <LanguageProvider>
+        
+          <LanguageSelector />
+        
         <Recipes trigger={this.clickSavedRecipe} />
         <section>
           <Title content="Balance" class="balance" />
           <div className={style.balance}>
             <div className={style.label}>
               <label htmlFor="weight">
-                > For a total dough weight of
+                > <Text tid="labelWeight" />
               </label>
               <input type="number" value={weight} min="0" max="10000" step="10" aria-labelledby="weight" onChange={(e) => this.setUpByWeight(e)} id="weight" className={style.weight} />
               <sup onClick={e => this.setUpLockedWeight()} className={`${co.lockIcon} ${lockedWeight ? co.locked : co.unlocked}`}>lock</sup>
-              g to bake.
+              g<Text tid="toBake" />.
               {kilo && <small>{`(${kilogram}kg)`}</small>}
             </div>
             <div className={style.main}>
               <div className={style.range}>
                 <label htmlFor="sourdough">
-                  {percentS}% Leaven <Note content={<Leaven />} />
+                  {percentS}% <Text tid="leaven" /> <Note content={<Leaven />} />
                 </label>
                 <input value={percentS} type="range" aria-labelledby="sourdough" onChange={(e) => this.setUpValue(e, "sourdough")} id="sourdough" min="0" max="100" />
                 <span><b>{weightS}g</b></span>
               </div>
               <div className={style.range}>
                 <label htmlFor="hydration">
-                    {percentH}% Hydration <Note content={<Hydration />} />
+                    {percentH}% <Text tid="hydration" /> <Note content={<Hydration />} />
                 </label>
                 <input value={percentH} type="range" aria-labelledby="hydration" onChange={(e) => this.setUpValue(e, "hydration")} id="hydration" min="0" max="100" />
                 <div className={co.blocks}>
@@ -315,14 +311,14 @@ class Home extends Component {
                     <span>
                     <b className={style.flour}>{weightF}g</b>
                     <sup onClick={e => this.setUpLockedWeight()} className={`${co.lockIconFlour} ${lockedWeight ? co.unlocked : co.locked}`}>lock</sup>
-                     Flour
+                    <Text tid="Flour" />
                     </span>
                     {!lockedWeight &&
                       <input value={weightF} type="range" aria-labelledby="sourdough" onChange={(e) => this.setUpFlour(e)} id="flour" min="0" max="1500" step="10" />
                     }
                   </span>
-                  <span><b className={style.water}>{weightW}ml</b> water</span>
-                  <span><b>{weightSalt}g</b> salt <Note content={<Salt />} /></span>
+                  <span><b className={style.water}>{weightW}ml</b> <Text tid="Water" /></span>
+                  <span><b>{weightSalt}g</b> <Text tid="Salt" /> <Note content={<Salt />} /></span>
                 </div> 
               </div>
             </div>
@@ -330,7 +326,7 @@ class Home extends Component {
 
         </section>
         <Timer composition={data} schedule={durationDefault} />
-      </div>
+      </LanguageProvider>
     );
   }
 }

@@ -78,8 +78,11 @@ const autoCountDonw = (arrayOfSteps) => {
         displayPush(currentStep);
         officialStep++;
         if(officialStep === arrayOfSteps.length - 1){
-            console.log("last step bypassed");
+            // console.log("last step bypassed");
             clearTimeout(timeout);
+            clients[0].postMessage({
+                status: "ENDING"
+            });
             stop = true;
         }
     }
@@ -90,7 +93,6 @@ const autoCountDonw = (arrayOfSteps) => {
         clearTimeout(timeout);
     }
 
-    // console.log("officialStep, nbSteps, stop", officialStep, nbSteps, stop)
     if(officialStep <= nbSteps && !stop){
         timeout = setTimeout(() => {
             autoCountDonw(arrayOfSteps);
@@ -106,9 +108,9 @@ const autoCountDonw = (arrayOfSteps) => {
             if (clients && clients.length) {
               // Send a response - the clients
               // array is ordered by last focused
-              clients[0].postMessage({
-                  status: "ENDING"
-            });
+                clients[0].postMessage({
+                    status: "ENDING"
+                });
             }
         });
     }

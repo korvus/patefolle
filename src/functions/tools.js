@@ -1,4 +1,5 @@
 import React, {Fragment} from "react";
+import { getCurrentLanguage } from "../containers/language";
 
 export const twoDigits = (num) => {
     return ("0" + num).slice(-2);
@@ -45,15 +46,22 @@ const randomInt = (min, max) => { // min and max included
     return Math.floor(Math.random() * (max - min) + min);
 }
 
-const adj = ["First", "Cool", "My", "mad", "crazy", "Awesome", "Sweet", "Incredible", "Custom", "Pimped", "French"];
-const noun = ["Recipe", "Dough", "Bread", "Pâte", "Boule", "Sourdough", "Baguette"];
+const adj = {
+    "en": ["First", "Cool", "My", "mad", "crazy", "Awesome", "Sweet", "Incredible", "Custom", "Pimped", "French"],
+    "fr": ["Recette", "Pâte", "Boule", "Baguette"]
+    };
+const noun = {
+    "en": ["Recipe", "Dough", "Bread", "Pâte", "Boule", "Sourdough", "Baguette"],
+    "fr": ["Première du nom", "Soyeuse", "Fraîche", "Folle", "Terrible", "Génial", "Doux", "Incroyable", "Personnalisé", "", "Française"]
+};
 
 export const randomName = () => {
-    const lengthAdj = adj.length;
-    const lengthNoun = noun.length;
+    const lang = getCurrentLanguage();
+    const lengthAdj = adj[lang].length;
+    const lengthNoun = noun[lang].length;
     const randomAdj = randomInt(0, lengthAdj);
     const randomNoun = randomInt(0, lengthNoun);
-    return `${adj[randomAdj]} ${noun[randomNoun]}`;
+    return `${adj[lang][randomAdj]} ${noun[lang][randomNoun]}`;
 }
 
 export const  roundDecimal = (nombre, precision) => {

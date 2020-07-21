@@ -3,6 +3,7 @@ import style from "../styles/wrapper.module.css";
 import Title from "./title.js";
 import { convertMinutsToHuman, randomName } from "../functions/tools.js";
 import ModalValid from "./modalValid.js";
+import { Text, FuncText } from '../containers/language';
 
 class Save extends Component {
     constructor(props) {
@@ -18,7 +19,6 @@ class Save extends Component {
 
     componentDidMount(){
         this.manageNameSuggestion();
-
     }
 
     manageNameSuggestion = () => {
@@ -174,33 +174,36 @@ class Save extends Component {
                     <div className={style.main}>
                         <div className={style.range}>
                             <form onSubmit={(e) => this.submitSave(e)}>
-                                <label htmlFor="title">Name your recipe.</label>
+                                <label htmlFor="title"><Text tid="nameYourRecipe" /></label>
                                 <input className={`${style.text} ${errorempty && style.error} ${errorAlready && style.error}`} value={title} placeholder={placeholder} type="text" aria-labelledby="title" onChange={(e) => this.editTitle(e)} id="title" />
-                                {errorAlready && <span className={style.errorAlready}>You have already a recipe with this name.</span>}
+                                {errorAlready && <span className={style.errorAlready}><Text tid="errorAlreadyRecipeName" /></span>}
                                 <dl>
-                                    <dt>Composition for a totale of {composition.weight}g</dt>
+                                    <dt><Text tid="compositionTotaleOf" /> {composition.weight}g</dt>
                                     <dd>
                                         <ul>
-                                            <li>{composition.percentS}% of leaven</li>
-                                            <li>{composition.percentH}% hydration.</li>
+                                            <li>{composition.percentS}% <Text tid="ofLeaven" /></li>
+                                            <li>{composition.percentH}% <Text tid="hydration" /></li>
                                         </ul>
                                     </dd>
-                                    <dt>Schedule for a totale of {timeTotal}</dt>
+                                    <dt><Text tid="ScheduleTotalOf" /> {timeTotal}</dt>
                                     <dd>
                                         <ul>
-                                            <li>{convertMinutsToHuman(autolyse)} of autolyse</li>
-                                            <li>{convertMinutsToHuman(zenithLeavin)} of raising leavin</li>
-                                            <li>{convertMinutsToHuman(fermentation)} of bulk fermentation {listSaF.length > 0 && <span>including {listSaF.length} Stretch &amp; Fold</span>}</li>
-                                            <li>{convertMinutsToHuman(proofingMinuts)} of proofing</li>
+                                            <li>{convertMinutsToHuman(autolyse)} <Text tid="ofAutolyse" /></li>
+                                            <li>{convertMinutsToHuman(zenithLeavin)} <Text tid="ofRaisingLeavin" /></li>
+                                            <li>{convertMinutsToHuman(fermentation)} <Text tid="ofBulkFermentation" /> 
+                                                {listSaF.length > 0 && <span><Text tid="including" /> {listSaF.length} <Text tid="StretchAFold" /></span>}</li>
+                                            <li>{convertMinutsToHuman(proofingMinuts)} <Text tid="ofProofing" /></li>
                                         </ul>
                                     </dd>
                                 </dl>
-                                <input className={style.submit} value="Save" type="submit" aria-labelledby="submit" onChange={(e) => this.rangeYeast(e)} id="submit" />
+                                    <input className={style.submit} value={FuncText('Save')} type="submit" aria-labelledby="submit" onChange={(e) => this.rangeYeast(e)} id="submit" />
                             </form>
                         </div>
                         <hr />
                         <div className={style.link}>
-                            <label htmlFor="share" role="presentation" onFocus={(e) => this.copypaste(e)} onClick={(e) => this.copypaste(e)} title="copy in paperclip" className={style.copy}>copy</label>
+                            <label htmlFor="share" role="presentation" onFocus={(e) => this.copypaste(e)} onClick={(e) => this.copypaste(e)} title="copy in paperclip" className={style.copy}>
+                                <Text tid="copy" />
+                            </label>
                             <input
                                 className={style.linkField}
                                 value={url}
