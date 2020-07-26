@@ -6,7 +6,7 @@ import { roundDecimal } from "./functions/tools.js";
 import style from "./styles/wrapper.module.css";
 import co from "./styles/quantities.module.css";
 import Timer from "./components/timer.js";
-import { LanguageProvider, Text } from './containers/language';
+import { LanguageProvider, Text, FuncText } from './containers/language';
 import LanguageSelector from "./components/languageSelector.js";
 import "./styles/global.css";
 import Recipes from "./components/recipes.js";
@@ -34,7 +34,7 @@ class Home extends Component {
         zenith: 300,
         autolyse: 90,
         fermentation: 240,
-        proofingMinuts: 500,
+        proofing: 500,
         saf: []
       }
     };
@@ -42,7 +42,7 @@ class Home extends Component {
 
   componentDidMount(){
     const paramsUrl = window.location.hash;
-    this.setServiceWorker();
+    // this.setServiceWorker();
     if(paramsUrl.length > 0){
       this.checkUrlParams(paramsUrl);
     } else {
@@ -62,32 +62,11 @@ class Home extends Component {
     }
   }
 
-  setServiceWorker = () => {
-    if ('serviceWorker' in navigator) {
-        Notification.requestPermission(permission => {
-            if(!('permission' in Notification)) {
-                Notification.permission = permission;
-            }
-            return permission;
-        })
-        .then(() => navigator.serviceWorker.register('/sw.js'))
-        .catch(console.error);
-        // Listen to service Worker
-        navigator.serviceWorker.onmessage = (event) => {
-            if (event.data) {
-              if(event.data.status === "RUNNING"){
-                this.setState({ currentCountDown: true });
-              }
-              if(event.data.status === "ENDING"){
-                this.setState({ currentCountDown: false });
-              }
-            }
-          };
-    } else {
-        console.warn('browser don\'t use services workers');
-    }
-  }
+  /* setServiceWorker = () => {} */
 
+  isRunning = (cdRunning) => {
+    this.setState({ currentCountDown: cdRunning });
+  }
   
   calculateWaterWeight = () => {
     const { percentH, weightF } = this.state;
@@ -195,7 +174,6 @@ class Home extends Component {
 
   }
 
-
   setData = (params) => {
     this.setState({
       weight: parseInt(params[0][0]),
@@ -207,8 +185,8 @@ class Home extends Component {
         autolyse: parseInt(params[5][0]),
         fermentation: parseInt(params[6][0]),
         saf: new Array(parseInt(params[7][0])),
-        proofingMinuts: parseInt(params[8][0])
-      }      
+        proofing: parseInt(params[8][0])
+      }
     }, () => {
       this.calculateSourdough();
     })
@@ -218,7 +196,7 @@ class Home extends Component {
     const { currentCountDown } = this.state;
     // console.log("currentCountDown", currentCountDown);
     const keyIndex = e.target.dataset.index;
-    const recipesRegistered = JSON.parse(localStorage.getItem("recipes")).recipes;
+    const recipesRegistered = JSON.parse(localStorage.getItem("patefolle-recipes")).recipes;
     const datas = recipesRegistered[keyIndex];
 
     const url = `(${datas.weight}-${datas.percentLeavin}-${datas.percentHydra}-${datas.weightSalt})(${datas.zenith}-${datas.autolyse}-${datas.fermentation}(${datas.saf.length})-${datas.proofing})`;
@@ -226,7 +204,7 @@ class Home extends Component {
     // url
 
     if(currentCountDown === true){
-      if(!window.confirm("There is currently a countdown. By confirming, you will cancel it.")){
+      if(!window.confirm(FuncText("countdownRunning"))){
         return;
       } else {
         navigator.serviceWorker.controller.postMessage({
@@ -244,7 +222,7 @@ class Home extends Component {
         zenith: datas.zenith,
         autolyse: datas.autolyse,
         fermentation: datas.fermentation,
-        proofingMinuts: datas.proofing,
+        proofing: datas.proofing,
         saf: datas.saf
       }      
     }, () => {
@@ -278,7 +256,7 @@ class Home extends Component {
     return (
       <LanguageProvider>
         
-          <LanguageSelector />
+        <LanguageSelector />
         
         <Recipes trigger={this.clickSavedRecipe} />
         <section>
@@ -325,7 +303,7 @@ class Home extends Component {
             </div>
 
         </section>
-        <Timer composition={data} schedule={durationDefault} />
+        <Timer composition={data} countDownFunc={this.isRunning} schedule={durationDefault} />
       </LanguageProvider>
     );
   }

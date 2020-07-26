@@ -106,6 +106,7 @@
     border-right: 5px solid transparent;
     border-top: 5rem solid #a74242;
     display:block;
+    white-space: nowrap;
     top: 0;
     margin-left: 5px;
 }

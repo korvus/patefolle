@@ -67,5 +67,6 @@
     "bulkproofingExp1":"Combien de temps vous souhaitez que la pâte se repose avant l'étape dites du boulage.",
     "bulkproofingExp2":"Vous pouvez rallonger d'autant ce processus en jouant sur la température. Dans un endroit frais, elle mettra plus de temps à se développer.",
     "proofingExp1":"Now that your breads have been shaped, they need time to rise again and be filled with carbon dioxide again before you put them into the oven for baking.",
-    "proofingExp2":"you can again delay the process by placing the breads in a cool place."
+    "proofingExp2":"you can again delay the process by placing the breads in a cool place.",
+    "countdownRunning": "Il y a actuellement une recette un compte à rebours en train de s'exécuter. En confirmant, vous allez l'annuler."
 }

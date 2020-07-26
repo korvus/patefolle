@@ -60,12 +60,12 @@ class Save extends Component {
     initLocalStorageObject = () => {
         const initObj = {recipes: []}
         const toSave = JSON.stringify(initObj);
-        localStorage.setItem("recipes", toSave);
+        localStorage.setItem("patefolle-recipes", toSave);
         console.info("localstorage initialised");
     }
 
     checkIfRecipeExist = (name) => {
-        const stringRecipes = localStorage.getItem("recipes");
+        const stringRecipes = localStorage.getItem("patefolle-recipes");
         const arrayRecipes = JSON.parse(stringRecipes);
         const allRecipes = arrayRecipes.recipes;
         if(allRecipes.length === 0){
@@ -91,12 +91,12 @@ class Save extends Component {
 
     submitSave = (e) => {
         e.preventDefault(e);
-        const { composition, zenithLeavin, autolyse, fermentation, proofingMinuts, listSaF } = this.props.data;
+        const { composition, zenithLeavin, autolyse, fermentation, proofing, listSaF } = this.props.data;
         const title = this.state.title;
         const inputVal = title.trim();
         if(inputVal.length > 0){
 
-            if(localStorage.getItem("recipes") === null){
+            if(localStorage.getItem("patefolle-recipes") === null){
                 this.initLocalStorageObject();
             } else {
                 const exist = this.checkIfRecipeExist(inputVal);
@@ -112,12 +112,12 @@ class Save extends Component {
                         "zenith": parseInt(zenithLeavin),
                         "autolyse": parseInt(autolyse),
                         "fermentation": parseInt(fermentation),
-                        "proofing": parseInt(proofingMinuts),
+                        "proofing": parseInt(proofing),
                         "saf": listSaF
                     };
                     exist.recipes.push(newRecipe);
                     const newRecipes = JSON.stringify(exist);
-                    localStorage.setItem('recipes', newRecipes);
+                    localStorage.setItem('patefolle-recipes', newRecipes);
                     this.setState({display: true});
                 }
                 // console.log("session storage already exist");
@@ -152,11 +152,11 @@ class Save extends Component {
             zenithLeavin,
             autolyse,
             fermentation,
-            proofingMinuts,
+            proofing,
             listSaF
         } = this.props.data;
 
-        const anchor = `#(${composition.weight}-${composition.percentS}-${composition.percentH}-${composition.weightSalt})(${zenithLeavin}-${autolyse}-${fermentation}(${listSaF.length})-${proofingMinuts})`;
+        const anchor = `#(${composition.weight}-${composition.percentS}-${composition.percentH}-${composition.weightSalt})(${zenithLeavin}-${autolyse}-${fermentation}(${listSaF.length})-${proofing})`;
         const url = typeof document !== `undefined` ? `${document.location.origin}/${anchor}` : null
 
         const {
@@ -192,7 +192,7 @@ class Save extends Component {
                                             <li>{convertMinutsToHuman(zenithLeavin)} <Text tid="ofRaisingLeavin" /></li>
                                             <li>{convertMinutsToHuman(fermentation)} <Text tid="ofBulkFermentation" /> 
                                                 {listSaF.length > 0 && <span><Text tid="including" /> {listSaF.length} <Text tid="StretchAFold" /></span>}</li>
-                                            <li>{convertMinutsToHuman(proofingMinuts)} <Text tid="ofProofing" /></li>
+                                            <li>{convertMinutsToHuman(proofing)} <Text tid="ofProofing" /></li>
                                         </ul>
                                     </dd>
                                 </dl>

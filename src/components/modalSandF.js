@@ -9,15 +9,18 @@ export default function Modale(props) {
     
     let percentToRemove = Math.round(9000/fermentation);
     if(fermentation < 120){
-        percentToRemove = 0;
+        percentToRemove = 25;
     }
+
     // const scopeInMinutes = Math.round(fermentation - 90);
     const TotalPercentToDivide = 100-percentToRemove;
 
     const slicePercent = TotalPercentToDivide/(parseInt(data.safNumber)+1);
 
     for (let a = 0; a < data.safNumber; a++) {
-        const timeToHuman = data.convertMinuts(Math.round(data.timeSlice+(a*(data.timeSlice))));
+        const timeToHuman = data.convertMinuts(data.timeSlice+(a*(data.timeSlice)));
+        // const timeToHuman = data.convertMinuts(Math.round(data.timeSlice+(a*(data.timeSlice))));
+
         items.push(<div style={{"left": `${slicePercent+(a*slicePercent)}%`}} title={timeToHuman} className={ModaleStyle.saf} key={a}></div>)
     }
 

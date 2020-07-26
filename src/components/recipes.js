@@ -5,27 +5,28 @@ import { Text, FuncText, LanguageContext } from "../containers/language";
 
 const getAlreadyRegistred = () => {
     let newExisting = [];
-    if(localStorage.getItem("recipes") !== null){
-      newExisting = JSON.parse(localStorage.getItem("recipes")).recipes;
+    if(localStorage.getItem("patefolle-recipes") !== null){
+      newExisting = JSON.parse(localStorage.getItem("patefolle-recipes")).recipes;
     }
     return newExisting;
 }
 
+const recipeInsideStorage = getAlreadyRegistred();
+
 const Recipes = (props) => {
 
-    const recipeInsideStorage = getAlreadyRegistred();
-
+    /* Just usefull for refresh the component when lang is changed */
     const { userLanguage } = useContext(LanguageContext);
     const [existing, setExisting] = useState(recipeInsideStorage);
 
     const deleteRecipe = (e) => {
-        const keyId = e.target.dataset.index;
-        if (window.confirm(FuncText("sureToDelete"))) { 
-            existing.splice(keyId, 1);
-            const initObj = {recipes: existing}
+        const keyId = parseInt(e.target.dataset.index);
+        if (window.confirm(FuncText("sureToDelete"))) {
+            const nextExisting = existing.filter((item, i) => i !== keyId);
+            const initObj = {recipes: nextExisting}
             const toSave = JSON.stringify(initObj);
-            localStorage.setItem("recipes", toSave);
-            setExisting(existing);
+            localStorage.setItem("patefolle-recipes", toSave);
+            setExisting(nextExisting);
         }
     }
 
@@ -47,7 +48,7 @@ const Recipes = (props) => {
 
 
           recipe.push(
-          <li className="recipe" key={a}>
+          <li className="recipe" key={a} data-lang={userLanguage}>
             <span data-index={a} role="presentation" onFocus={(e) => trigger(e)} onClick={(e) => trigger(e)} title={title} className="recipe">
                 <b>{existing[a].title}</b> - [ {existing[a].weight}g ● {existing[a].percentHydra}% {FuncText("hydration")} ● {existing[a].percentLeavin}% {FuncText("leaven")} ]
                 [ {convertMinutsToHuman(existing[a].zenith)} {FuncText("raisingLeavin")} ● {convertMinutsToHuman(existing[a].autolyse)} {FuncText("ofAutolyse")} ● {convertMinutsToHuman(existing[a].fermentation)} {FuncText("BulkFermentation")} ●{` `} 

@@ -12,7 +12,7 @@ export const convertMinutsToHuman = (mins) => {
     let minutes = (hours - rhours) * 60;
     let rminutes = Math.round(minutes);
     rminutes = twoDigits(rminutes);
-    const timeToRead = rhours === 0 ? `${minutes}minute${minutes > 1 ? 's' : ''}` : rhours+"h"+rminutes;
+    const timeToRead = rhours === 0 ? `${minutes} minute${minutes > 1 ? 's' : ''}` : rhours+"h"+rminutes;
     return timeToRead;
 }
 
@@ -21,9 +21,16 @@ export const extractMinutsFromDate = (dateObj) => {
     let minuts = dateObj.getMinutes();
     minuts = twoDigits(minuts);
     minuts = twoDigits(minuts);
-    return hours+":"+minuts;
+    // return hours+":"+minuts;
     // IF you want the seconds on the stretch & fold step discomment next line.
-    // return hours+":"+minuts+":"+twoDigits(dateObj.getSeconds());
+    return hours+":"+minuts+":"+twoDigits(dateObj.getSeconds());
+}
+
+export const roundMinutes = (dateObj) => {
+    const neoDate = new Date(dateObj.getTime());
+    neoDate.setHours(neoDate.getHours() + Math.round(neoDate.getMinutes()/60));
+    neoDate.setMinutes(0, 0, 0);
+    return neoDate;
 }
 
 export const decimalToSeconds = (minutes) => {
@@ -41,6 +48,13 @@ export function ExtractMinutsAndSecondsFromDate(props) {
     seconds = twoDigits(seconds);
     return <Fragment>{hours}:{minuts}<span>:{seconds}</span></Fragment>;
 }
+
+export function checkTime(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
 
 const randomInt = (min, max) => { // min and max included 
     return Math.floor(Math.random() * (max - min) + min);

@@ -22,6 +22,7 @@ self.addEventListener('activate', () => {});
 
 
 const displayPush = (i) => {
+    // console.log("display a notif");
     const title = "Pâte Folle";
     const options = {
       body: steps[i],
@@ -30,6 +31,16 @@ const displayPush = (i) => {
     };
 
     self.registration.showNotification(title, options);
+    self.clients.matchAll({
+        includeUncontrolled: true,
+        type: 'window',
+    }).then((clients) => {
+        if (clients && clients.length) {
+            clients[0].postMessage({
+              status: "NOTIFSPUSHED"
+            });
+        }
+    });
 }
 
 const findClosestStep = (arrayOfSteps) => {
@@ -54,34 +65,36 @@ const findClosestStep = (arrayOfSteps) => {
 }
 
 
-const autoCountDonw = (arrayOfSteps) => {
+const autoCountDown = (arrayOfSteps) => {
 
     const currentStep = findClosestStep(arrayOfSteps);
     const nbSteps = steps.length;
 
-    // console.log("officialStep / currentStep", officialStep, currentStep);
     self.clients.matchAll({
         includeUncontrolled: true,
         type: 'window',
     }).then((clients) => {
         if (clients && clients.length) {
-          // Send a response - the clients
-          // array is ordered by last focused
-          clients[0].postMessage({
+            clients[0].postMessage({
               status: "RUNNING",
               startMoment: arrayOfSteps[0]
-        });
+            });
         }
     });
 
+    // console.log(officialStep, currentStep);
     if(officialStep !== currentStep){
         displayPush(currentStep);
         officialStep++;
         if(officialStep === arrayOfSteps.length - 1){
-            // console.log("last step bypassed");
-            clearTimeout(timeout);
-            clients[0].postMessage({
-                status: "ENDING"
+            self.clients.matchAll({
+                includeUncontrolled: true,
+                type: 'window',
+            }).then((clients) => {
+                clearTimeout(timeout);
+                clients[0].postMessage({
+                    status: "ENDING"
+                });
             });
             stop = true;
         }
@@ -95,12 +108,11 @@ const autoCountDonw = (arrayOfSteps) => {
 
     if(officialStep <= nbSteps && !stop){
         timeout = setTimeout(() => {
-            autoCountDonw(arrayOfSteps);
+            autoCountDown(arrayOfSteps);
         }, 1000);
     } else {
         officialStep = 1;
         clearTimeout(timeout);
-        // console.log("end");
         self.clients.matchAll({
             includeUncontrolled: true,
             type: 'window',
@@ -114,8 +126,6 @@ const autoCountDonw = (arrayOfSteps) => {
             }
         });
     }
-
-
 
 }
 
@@ -134,18 +144,18 @@ self.addEventListener('message', (event) => {
         // Get array
 
         if(event.data.type==="LAUNCH"){
+            console.log("event.data.milestones", event.data.milestones);
             officialStep = findClosestStep(event.data.milestones);
             if(event.data.saf.length > 0){
                 event.data.milestones.splice(3, 0, ...event.data.saf);
                 const alertsSaF = Array.from({ length: event.data.saf.length }).fill(["Stretch and Fold!"]).flat()
                 steps.splice(3, 0, ...alertsSaF);
-                console.log("saf & Steps", event.data.milestones, steps);
             }
             /* Cancel previous countdonw if exists. */
             clearTimeout(timeout);
-            autoCountDonw(event.data.milestones);
+            autoCountDown(event.data.milestones);
         } else {
-            console.log("you canceled the countdown");
+            console.info("you canceled the countdown");
             officialStep = 1;
             clearTimeout(timeout);
         }

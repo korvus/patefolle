@@ -1,79 +1,99 @@
 import React, {Component, Fragment} from "react";
 import timerStyles from "../styles/wrapper.module.css"
 import Title from "./title"
-import Modal from "./modal"
+import Modal from "./modalSandF"
 import Note from "./noteinfos";
+import Timeline from "./timeline.js";
 import Ext from "./ext.js";
 import Save from "./save.js";
 import { Proofing, Bulkproofing } from "./infos.js";
-import { convertMinutsToHuman, extractMinutsFromDate, ExtractMinutsAndSecondsFromDate, twoDigits, decimalToSeconds } from "../functions/tools.js";
+import { convertMinutsToHuman, extractMinutsFromDate, twoDigits, decimalToSeconds, checkTime } from "../functions/tools.js";
 import { Text, FuncText } from '../containers/language';
 
-function checkTime(i) {
-  if (i < 10) {
-    i = "0" + i;
-  }
-  return i;
-}
 
 /* Minutes between pre shaping and shaping */
-const preSetTiming = 30;
+const preSetTiming = 1;
 let timeWithoutStretchAndFold = 90;
 // let temps;
 
 class Timer extends Component {
     constructor(props) {
         super(props);
-        const { autolyse, fermentation, proofingMinuts, zenith, saf } = props.schedule;
+        const { autolyse, fermentation, proofing, zenith, saf } = props.schedule;
         this.state = {
             autolyse,
             fermentation,
-            proofingMinuts,
+            proofing,
             zenith,
             toolate: false,
             now: new Date(),
-            startAutolyse: new Date(),
-            addLeavin: new Date(),
-            humanFermentation: "",
-            afterFermentation: new Date(),
+            dateAutolyse: new Date(),
+            dateZenith: new Date(),
+            dateFermentation: new Date(),
             shaping: 0,
-            timeAfterFermentation: new Date(),
-            preshaping: new Date(),
+            dateRest: new Date(),
             displayModal: false,
             safNumber: saf.length,
             timeSliceSaF: [],
             listSaF: saf,
-            startProofingHour: new Date(),
-            hoveredStripe: 0,
+            dateProofing: new Date(),
             potentialStart: "",
             currentCountDown: false,
-            worker: () => {}
+            worker: () => {},
+            hourNow: 0
         };
     }
 
     componentDidMount = () => {
-        this.setUpWaitingYeast(this.state.zenith);
-        this.setUpAutolyse(this.state.autolyse);
-        this.startTime();
-        this.setServiceWorker();
+        this.askCountDown();
+    }
+
+    /* Check if a countdown exist already or not */
+    askCountDown(){
+        let countDownExisting = [];
+        if(localStorage.getItem("patefolle-cd") !== null){
+          countDownExisting = JSON.parse(localStorage.getItem("patefolle-cd"));
+          const isRunning = countDownExisting.active;
+          this.setState({ currentCountDown: isRunning }, () => {
+            this.props.countDownFunc(this.state.currentCountDown);
+          });
+          if(isRunning){
+            const startMoment = countDownExisting.schedule[0];
+            this.startTime();
+            // Doit changer également avec le schedule stocké en théorie sur le cookie 
+            // plutot que le schedule fournit par le component d'au dessus
+            this.changeHourWithDate(new Date(startMoment));
+          } else {                
+                this.redispatchValues();
+          }
+        }
+        
+        // return newExisting;
     }
 
     startTime = () => {
-        const { startProofingHour } = this.state;
+        const { dateProofing, toolate } = this.state;
         var today = new Date();
         var h = today.getHours();
         var m = today.getMinutes();
         m = checkTime(m);
-        if(today > startProofingHour){
-            this.setState({ toolate: true });
+        if(today > dateProofing){
+            this.cancelCountdown();
+            this.setState({ toolate: true, currentCountDown: false }, () => {
+                this.cancelCountdown();
+            });
         } else {
             this.setState({ toolate: false });
         }
         const currentTimeNow = h + ":" + m;
+
         this.setState({ potentialStart: currentTimeNow });
+        
         // if(this.state.currentCountDown){
         setTimeout(() => {
-            this.startTime()
+            if(!toolate){
+                this.startTime()
+            }
         }, 2000);
         /*} else {
             clearTimeout(temps);
@@ -81,278 +101,168 @@ class Timer extends Component {
 
     }
 
-    makeReadableFermentation = () => {
-        let { fermentation, addLeavin, safNumber } = this.state;
-        const humanFermentation = convertMinutsToHuman(fermentation);
-        let afterFermentation = new Date(addLeavin.getTime());
-        afterFermentation.setMinutes( afterFermentation.getMinutes() + parseInt(fermentation));
-        this.setState({ preshaping: afterFermentation });
-        afterFermentation = new Date(afterFermentation.getTime());
-        const preShaped = new Date(afterFermentation.getTime());
-        // Ici se passe le temps entre shaping et pre shaping
-        preShaped.setMinutes( preShaped.getMinutes() + preSetTiming);
-        this.setState({ timeAfterFermentation: preShaped }, () => {
-            // Set timer for next step
-            this.makeReadableProofing(this.state.proofingMinuts);
-        });
-        // }
-        this.setState({ humanFermentation, afterFermentation });
-        // Stretch & Fold
-        this.setNumberOfStretchAndFold(safNumber);
-        /* Initialisation de la timeline */
-    }
-
-    makeReadableProofing = (proofing) => {
-        var { timeAfterFermentation, startProofingHour } = this.state;
-        startProofingHour = new Date(timeAfterFermentation.getTime());
-        startProofingHour.setMinutes( startProofingHour.getMinutes() + parseInt(proofing));
-        this.setState({ startProofingHour });
-    }
-
-    changeProofing = (e) => {
-        this.makeReadableProofing(e.target.value);
-        this.setState({ proofingMinuts: e.target.value })
-    }
-
     changeHourWithDate = (dateObj) => {
         this.setState({now: dateObj}, () => {
-            this.setUpWaitingYeast(this.state.zenith);
-            this.setUpAutolyse(this.state.autolyse);
+            this.redispatchValues();
         });
     }
 
-    changeHour = (e) => {
+    modifyHour = (e) => {
         const [hours, minuts] = e.target.value.split(":");
         let changedTime = new Date();
         changedTime.setHours(hours, minuts);
         this.changeHourWithDate(changedTime);
     }
 
-    changeFermentationDuration = (e) => {
-        const newValue = e.target.value;
-        this.setState({ fermentation: e.target.value }, () => {
-            this.makeReadableFermentation(newValue);
-        });
+    modifyAutolyse = (mins) => {
+        this.setState({autolyse: mins},() => {this.redispatchValues();})
     }
 
-    rangeYeast = (e) => {
-        this.setUpWaitingYeast(e.target.value);
+    modifyZenith = (e) => {
+        this.setState({zenith: e.target.value},() => {this.redispatchValues();})
     }
 
-    setUpAutolyse = (mins) => {
-        const { zenith, now } = this.state;
-        const startAutolyse = new Date(now.getTime());
-        const diff = parseInt(zenith) - parseInt(mins);
-        startAutolyse.setMinutes( startAutolyse.getMinutes() + diff);
-        this.setState({ autolyse: mins, startAutolyse })
+    modifyFermentation = (e) => {
+        this.setState({fermentation: e.target.value},() => {this.redispatchValues();})
     }
 
-    setUpWaitingYeast = (zenith) => {
-        const start = new Date(this.state.now.getTime());
-        start.setMinutes( start.getMinutes() + parseInt(zenith) );
-        this.setState({zenith, addLeavin: start}, () => {
-            this.setUpAutolyse(this.state.autolyse);
-            this.makeReadableFermentation();
-        })
+    modifyProofing = (e) => {
+        this.setState({proofing: e.target.value},() => {this.redispatchValues();})
     }
 
     displayModalHowLong = () => {
-        this.setState({
-            display: !this.state.display
-        })
+        this.setState({ display: !this.state.display })
     }
 
     setNumberOfStretchAndFold = (nbSaF) => {
-        if(this.state.fermentation < 120){
-            timeWithoutStretchAndFold = (25*this.state.fermentation)/100;
+        // Si on est en dessous de 120 minutes, on retires 25%
+        let { dateZenith, fermentation } = this.state;
+        fermentation = parseInt(fermentation);
+        if(fermentation < 120){
+            timeWithoutStretchAndFold = (25*fermentation)/100;
+        } else {
+            // Défined on top
+            timeWithoutStretchAndFold = 90;
         }
-        const scopeAuthorised = this.state.fermentation - timeWithoutStretchAndFold;
-        const timeSlice = scopeAuthorised/parseInt(nbSaF);
+        const scopeAuthorised = fermentation - timeWithoutStretchAndFold;
+        const timeSlice = scopeAuthorised/(parseInt(nbSaF)+1);
+        // console.log("this.state.fermentation", this.state.fermentation, "timeWithoutStretchAndFold", timeWithoutStretchAndFold, "timeSlice", timeSlice, "scopeAuthorised", scopeAuthorised);
 
         const safMinuts = [];
         for (let a = 0; a < nbSaF; a++) {
-            // this.state.addLeavin
-            let gapsaf = timeSlice+(a*(timeSlice));
+            let gapsaf = timeSlice+(a*timeSlice);
             gapsaf = decimalToSeconds(gapsaf);
-            const datesaf = new Date(this.state.addLeavin);
+            const datesaf = new Date(dateZenith);
             datesaf.setSeconds( datesaf.getSeconds() + gapsaf);
             safMinuts.push(datesaf);
         }
         this.setState({ safNumber: nbSaF, timeSliceSaF: timeSlice, listSaF: safMinuts });
     }
 
-    getPercentForTimeline = ( totalScopeTimelineMinuts, startTimeStamp, objDate ) => {
-        const timeStamp = objDate.getTime();
-        const scopeMinuts = ((timeStamp - startTimeStamp) / 1000) / 60;
-        const percent = (scopeMinuts*100)/totalScopeTimelineMinuts;
-        return percent;
-    }
-
-    getPercentForTimelineInSeconds = ( totalScopeTimelineSeconds, startTimeStamp, objDate ) => {
-        const timeStamp = objDate.getTime();
-        const scopeSeconds = ((timeStamp - startTimeStamp) / 1000);
-        const percent = (scopeSeconds*100)/totalScopeTimelineSeconds;
-        return percent;
-    }
-
-    roundMinutes = (dateObj) => {
-        // https://stackoverflow.com/questions/7293306/how-to-round-to-nearest-hour-using-javascript-date-object
-        const neoDate = new Date(dateObj.getTime());
-        neoDate.setHours(neoDate.getHours() + Math.round(neoDate.getMinutes()/60));
-        neoDate.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
-        return neoDate;
-    }
-
-    roundSeconds = (dateObj) => {
-        const neoDate = new Date(dateObj.getTime());
-        neoDate.setMinutes(neoDate.getMinutes() + Math.round(neoDate.getSeconds()/60));
-        neoDate.setSeconds(0, 0); // Resets also seconds and milliseconds
-        return neoDate;
-    }
-
-    showHour = step => {
-        this.setState({hoveredStripe: step})
-    }
-
     componentDidUpdate(prevProps){
         if(JSON.stringify(prevProps.schedule) !== JSON.stringify(this.props.schedule)){
-            this.refreshState();
+            /* To check if script running or not */
+            this.reinitSchedule();
         }
     }
 
-    refreshState = () => {
-        const { autolyse, fermentation, proofingMinuts, zenith, saf} = this.props.schedule;
+    reinitSchedule = () => {
+        const { autolyse, fermentation, proofing, zenith, saf} = this.props.schedule;
+        this.setState({autolyse, fermentation, proofing, zenith, saf}, () => {
+            this.redispatchValues();
+        })
+    }
+
+    setupAll = (start) => {
+        const { zenith, autolyse, fermentation, proofing } = this.state;
+        const step0 = new Date(start);
+        const step2 = new Date(step0.setMinutes(step0.getMinutes() + parseInt(zenith)));
+        const tmpStep2 = new Date(step2);
+        const tmpStep2bisbis = new Date(step2);
+        const step1 = new Date(tmpStep2.setMinutes(tmpStep2.getMinutes() - autolyse));
+        const step3 = new Date(tmpStep2bisbis.setMinutes(tmpStep2bisbis.getMinutes() + parseInt(fermentation)));
+        const tmpStep3 = new Date(step3);
+        const step4 = new Date(tmpStep3.setMinutes(tmpStep3.getMinutes() + preSetTiming));
+        const tmpStep4 = new Date(step4);
+        const step5 = new Date(tmpStep4.setMinutes(tmpStep4.getMinutes() + parseInt(proofing)));
+        return [step1, step2, step3, step4, step5];
+    }    
+
+    redispatchValues = () => {
+        const { safNumber, now } = this.state;
+        const [step1, step2, step3, step4, step5] = this.setupAll(now);
         this.setState({
-            fermentation,
-            proofingMinuts,
-            zenith
+            dateAutolyse: step1,
+            dateZenith: step2,
+            dateFermentation: step3,
+            dateRest: step4,
+            dateProofing: step5
         }, () => {
-            this.setUpWaitingYeast(this.state.zenith);
-            this.setNumberOfStretchAndFold(saf.length);
-            this.setUpAutolyse(autolyse);
-        });
-    }
+            this.setNumberOfStretchAndFold(safNumber);
+        })
 
-    setTimeOfSaF = (nbSaF, addLeavin) => {
-        if(this.state.fermentation < 120){
-            timeWithoutStretchAndFold = (25*this.state.fermentation)/100;
-        }
-        const scopeAuthorised = this.state.fermentation - timeWithoutStretchAndFold;
-        // console.log("scopeAuthorised", scopeAuthorised);
-        const timeSlice = scopeAuthorised/parseInt(nbSaF);
-
-        const safMinuts = [];
-        for (let a = 0; a < nbSaF; a++) {
-            let gapsaf = timeSlice+(a*(timeSlice));
-            gapsaf = decimalToSeconds(gapsaf);
-            const addLeavinStep = new Date(addLeavin);
-            addLeavinStep.setSeconds( addLeavinStep.getSeconds() + gapsaf);
-            /*
-            const datesaf = new Date(this.state.addLeavin);
-            datesaf.setSeconds( datesaf.getSeconds() + gapsaf);
-            */
-            safMinuts.push(addLeavinStep);
-        }
-        return safMinuts;
     }
 
     launchWW = (start) => {
+        // this.changeHourWithDate(start);
         this.setState({now: start, currentCountDown: true}, () => {
-            /*
-            this.setUpWaitingYeast(this.state.zenith);
-            this.setNumberOfStretchAndFold(this.state.listSaF.length);
-            this.setUpAutolyse();
-            */
 
-            const { zenith, autolyse, listSaF, fermentation, proofingMinuts } = this.state;
-            const step0 = new Date(start);
-            const step2 = new Date(step0.setMinutes(step0.getMinutes() + zenith));
-            const tmpStep2 = new Date(step2);
-            const tmpStep2bis = new Date(step2);
-            const tmpStep2bisbis = new Date(step2);
-            const step1 = new Date(tmpStep2.setMinutes(tmpStep2.getMinutes() - autolyse));
-            const step3 = new Date(tmpStep2bisbis.setMinutes(tmpStep2bisbis.getMinutes() + fermentation));
-            const tmpStep3 = new Date(step3);
-            const step4 = new Date(tmpStep3.setMinutes(tmpStep3.getMinutes() + preSetTiming));
-            const tmpStep4 = new Date(step4);
-            const step5 = new Date(tmpStep4.setMinutes(tmpStep4.getMinutes() + proofingMinuts));
+            const allSteps = this.setupAll(start);
 
-            const listSaf = this.setTimeOfSaF(listSaF.length, tmpStep2bis);
+            const milestones = [start, ...allSteps];
 
-            const milestones = [start, step1, step2, step3, step4, step5];
+            const initObj = {active: true, schedule: milestones}
+            const toSave = JSON.stringify(initObj);
+            localStorage.setItem("patefolle-cd", toSave);
 
-            this.state.worker.active.postMessage({
-                type: "LAUNCH",
-                milestones: milestones,
-                saf: listSaf    
+            const [step1, step2, step3, step4, step5] = this.setupAll(start);
+            this.setState({
+                dateAutolyse: step1,
+                dateZenith: step2,
+                dateFermentation: step3,
+                dateRest: step4,
+                dateProofing: step5
+            }, () => {
+                this.startTime();
             })
-
-            this.startTime();
+            // this.startTime();
         });
     }
 
-    setServiceWorker = () => {
-        if ('serviceWorker' in navigator) {
-            Notification.requestPermission(permission => {
-                if(!('permission' in Notification)) {
-                    Notification.permission = permission;
-                }
-                return permission;
-            })
-            .then(() => navigator.serviceWorker.register('/sw.js')).then((worker) => {
-                this.setState({ worker });
-            })
-            .catch(console.error);
-            /* Listen to service Worker */
-            navigator.serviceWorker.onmessage = (event) => {
-                if (event.data) {
-                  if(event.data.status === "RUNNING"){
-                    this.changeHourWithDate(event.data.startMoment);
-                    this.setState({ currentCountDown: true }, () => {
-                        this.startTime();
-                    });
-                  }
-                  if(event.data.status === "ENDING"){
-                    this.setState({ currentCountDown: false, toolate: true });
-                  }
-                }
-              };
-        } else {
-            console.warn('browser don\'t use services workers');
-        }
+    resetSessionCountDown = () => {
+        const setToFalse = JSON.stringify({active: false});
+        this.props.countDownFunc(false);
+        localStorage.setItem("patefolle-cd", setToFalse);
     }
 
     cancelCountdown = () => {
         this.setState({currentCountDown: false});
-        navigator.serviceWorker.controller.postMessage({
-            type: "CANCEL"
-        });
+        this.resetSessionCountDown();
     }
 
     /* {/*onMouseLeave={() => this.closeTooltip()}} */
     render() {
-        const { 
+        const {
             now,
             zenith,
             autolyse,
             fermentation,
-            proofingMinuts,
-            startAutolyse,
-            humanFermentation,
-            afterFermentation,
-            preshaping, 
+            proofing,
+            dateAutolyse,
+            dateFermentation,
             display,
-            addLeavin,
-            timeAfterFermentation,
+            dateZenith,
+            dateRest,
             safNumber,
             timeSliceSaF,
-            startProofingHour,
-            hoveredStripe,
+            dateProofing,
             listSaF,
             potentialStart,
             currentCountDown,
             toolate
         } = this.state;
+
+        const schedule = { listSaF, dateProofing, dateAutolyse, dateZenith, dateFermentation, dateRest };
 
         const hourNow = twoDigits(now.getHours());
         const minutesNow = twoDigits(now.getMinutes());
@@ -360,76 +270,17 @@ class Timer extends Component {
         const data = {
             safNumber: safNumber,
             setNumberOfStretchAndFold: this.setNumberOfStretchAndFold,
-            timeFermentation: humanFermentation,
+            timeFermentation: convertMinutsToHuman(fermentation),
             timeFermentationMin: fermentation,
             timeSlice: timeSliceSaF,
             convertMinuts: convertMinutsToHuman
         }
-        
-        const endTimeStamp = startProofingHour.getTime();
+
+        const endTimeStamp = dateProofing.getTime();
         const startTimeStamp = now.getTime();
 
-        const closestHour = this.roundMinutes(now);
-        if(closestHour.getTime() < startTimeStamp){
-            closestHour.setHours(closestHour.getHours() + 1);
-        }
-        const FirstHour = closestHour.getHours();
-        
-        const closestMinut = this.roundSeconds(now);
-        if(closestMinut.getTime() < startTimeStamp){
-            closestMinut.setMinutes(closestMinut.getMinutes() + 1);
-        }
-        const FirstMinute = closestMinut.getMinutes();
-
         const totalScopeTimelineMinuts = ((endTimeStamp - startTimeStamp) / 1000) / 60;
-        const totalScopeTimeSeconds = ((endTimeStamp - startTimeStamp) / 1000);
-
-        /* Hours */
-        const firstHourPercent  = this.getPercentForTimeline( totalScopeTimelineMinuts, startTimeStamp, closestMinut );
-        const firstMinutPercent  = this.getPercentForTimelineInSeconds( totalScopeTimeSeconds, startTimeStamp, closestMinut );
-        const scopeNumberHours = Math.ceil(totalScopeTimelineMinuts/60);
-        const scopeNumberMinuts = Math.ceil(totalScopeTimeSeconds)/60;
-
-        const items = [];
-
-        if( totalScopeTimelineMinuts > 120 ){
-            for (let a = 1; a < scopeNumberHours; a++) {
-                closestHour.setHours(closestHour.getHours() + 1);
-                const hour = closestHour.getHours();
-                const percentHour = this.getPercentForTimeline( totalScopeTimelineMinuts, startTimeStamp, closestHour );
-                items.push(<div style={{"left": `${Math.round(percentHour)}%`}} className={timerStyles.grid} key={a}>{hour}h</div>)
-            }
-        } else {
-            for (let a = 1; a < scopeNumberMinuts; a++) {
-                closestMinut.setMinutes(closestMinut.getMinutes() + 1);
-                const minute = closestMinut.getMinutes();
-                const percentMinut = this.getPercentForTimelineInSeconds( totalScopeTimeSeconds, startTimeStamp, closestMinut );
-                items.push(<div style={{"left": `${Math.round(percentMinut)}%`}} className={timerStyles.grid} key={a}>{minute}</div>)
-            }
-        }
-
-        const saf = [];
-        for (let b = 0; b < listSaF.length; b++) {
-            const safMinut = listSaF[b];
-            const safMoment = extractMinutsFromDate(safMinut);
-            const percentSaF = this.getPercentForTimeline( totalScopeTimelineMinuts, startTimeStamp, safMinut );
-            saf.push(<div style={{"left": `${percentSaF}%`}} title={safMoment} className={timerStyles.saf} key={b}></div>)
-        }
-
-        /* Steps */
-        /* In minuts */
-        const shapingPercent     = this.getPercentForTimeline( totalScopeTimelineMinuts, startTimeStamp, timeAfterFermentation );
-        const preshapingPercent  = this.getPercentForTimeline( totalScopeTimelineMinuts, startTimeStamp, preshaping );
-        const AddLeavinPercent   = this.getPercentForTimeline( totalScopeTimelineMinuts, startTimeStamp, addLeavin );
-        const createDoughPercent = this.getPercentForTimeline( totalScopeTimelineMinuts, startTimeStamp, startAutolyse );
-
-        /* Is live */
-        let countDownPercent   = this.getPercentForTimelineInSeconds( totalScopeTimeSeconds, startTimeStamp, new Date());
-        countDownPercent = countDownPercent > 100 ? 100 : countDownPercent;
-        // if(countDownPercent >= 100){ clearTimeout(temps); }
-
         const timeTotal = convertMinutsToHuman(totalScopeTimelineMinuts);
-        // totalScopeTimelineMinuts
 
         const composition = this.props.composition;
 
@@ -439,7 +290,7 @@ class Timer extends Component {
             zenithLeavin: zenith,
             autolyse,
             fermentation,
-            proofingMinuts,
+            proofing,
             listSaF
         }
 
@@ -452,7 +303,7 @@ class Timer extends Component {
                         <label htmlFor="moment">
                             <Text tid="countdownStart" />
                         </label>
-                        <input type="time" value={`${hourNow}:${minutesNow}`} aria-labelledby="moment" onChange={(e) => this.changeHour(e)} id="moment" className={timerStyles.moment} />
+                        <input value={`${hourNow}:${minutesNow}`} aria-labelledby="moment" onChange={(e) => this.modifyHour(e)} className={timerStyles.moment} type="time" id="moment" />
                         <Text tid="whenStartCD" />
                     </div>
                     <div className={timerStyles.main}>
@@ -462,11 +313,11 @@ class Timer extends Component {
                                     <Text tid="autolysisTimer" />
                                     <Ext title={FuncText("autolyseTtl")} link={FuncText("autolyseYoutube")} />
                                 </label>
-                                <input value={autolyse} disabled={currentCountDown} type="range" aria-labelledby="autolyse" onChange={(e) => this.setUpAutolyse(e.target.value)} id="autolyse" min="0" max={limitAutolyse} />
+                                <input value={autolyse} onChange={(e) => this.modifyAutolyse(e.target.value)} aria-labelledby="autolyse" type="range" id="autolyse" min="0" max={limitAutolyse} disabled={currentCountDown} />
                                 <span><u>{convertMinutsToHuman(autolyse)}</u></span> 
                             </div>
                             <div className={timerStyles.right}>
-                                <b>{extractMinutsFromDate(startAutolyse)}</b>
+                                <b>{extractMinutsFromDate(dateAutolyse)}</b>
                             </div>
                         </div>
                         <div className={timerStyles.range}>
@@ -475,11 +326,11 @@ class Timer extends Component {
                                     <Text tid="yeastTopReached" />
                                     <Ext title={FuncText("YeastTtl")} link={FuncText("yeastTopYoutube")} />
                                 </label>
-                                <input disabled={currentCountDown} value={zenith} type="range" aria-labelledby="sourdough" onChange={(e) => this.rangeYeast(e)} id="sourdough" min="30" max="720" step="5" />
+                                <input onChange={(e) => this.modifyZenith(e)} value={zenith} aria-labelledby="sourdough" id="sourdough" min="30" max="720" step="5" type="range" disabled={currentCountDown} />
                                 <span><u>{convertMinutsToHuman(zenith)}</u></span>
                             </div>
                             <div className={timerStyles.right}>
-                                <b>{extractMinutsFromDate(addLeavin)}</b>
+                                <b>{extractMinutsFromDate(dateZenith)}</b>
                             </div>
                         </div>
                         <div className={timerStyles.range}>
@@ -489,8 +340,8 @@ class Timer extends Component {
                                     <Ext title={FuncText("bulkFermentationttl")} link={FuncText("bulkFermentationLink")} />
                                     <Note content={<Bulkproofing />} />
                                 </label>
-                                <input disabled={currentCountDown} value={fermentation} type="range" aria-labelledby="fermentation" onChange={(e) => this.changeFermentationDuration(e)} id="fermentation" min="120" max="1200" step="5" />
-                                <span><u>{humanFermentation}</u> <span>-></span>
+                                <input onChange={(e) => this.modifyFermentation(e)} value={fermentation} type="range" aria-labelledby="fermentation" id="fermentation" min="120" max="1200" step="5" disabled={currentCountDown} />
+                                <span><u>{convertMinutsToHuman(fermentation)}</u> <span>-></span>
                                     <Text tid="startPreShaping" />
                                 </span><br />
                                 <label className={timerStyles.noPadding} htmlFor="fermentation">
@@ -502,7 +353,7 @@ class Timer extends Component {
                                 </label>
                             </div>
                             <div className={timerStyles.right}>
-                                <b>{extractMinutsFromDate(afterFermentation)}</b><br />
+                                <b>{extractMinutsFromDate(dateFermentation)}</b><br />
                             </div>
                         </div>
                         <div className={`${timerStyles.range} ${timerStyles.alignCenter}`}>
@@ -514,7 +365,7 @@ class Timer extends Component {
                                     </span><Ext title={FuncText("shapingAndPreshappingttl")} link={FuncText("shapingLink")} />
                             </div>
                             <div className={timerStyles.right}>
-                                <b className={timerStyles.noMargin}>{extractMinutsFromDate(timeAfterFermentation)}</b>
+                                <b className={timerStyles.noMargin}>{extractMinutsFromDate(dateRest)}</b>
                             </div>
                         </div>
                         <div className={timerStyles.range}>
@@ -524,13 +375,13 @@ class Timer extends Component {
                                     <Ext title={FuncText("fermentedTtl")} link={FuncText("fermentedLink")} />
                                     <Note content={<Proofing />}/>
                                 </label>
-                                <input disabled={currentCountDown} value={proofingMinuts} type="range" aria-labelledby="proofing" onChange={(e) => this.changeProofing(e)} id="proofing" min="120" max="1200" step="5" />
-                                <span><u>{convertMinutsToHuman(proofingMinuts)}</u> <span>-></span> 
+                                <input onChange={(e) => this.modifyProofing(e)} value={proofing} type="range" aria-labelledby="proofing" id="proofing" min="120" max="1200" step="5" disabled={currentCountDown} />
+                                <span><u>{convertMinutsToHuman(proofing)}</u> <span>-></span> 
                                 <Text tid="startBakeAt" />
                                 </span>
                             </div>
                             <div className={timerStyles.right}>
-                            <b>{extractMinutsFromDate(startProofingHour)}</b>
+                            <b>{extractMinutsFromDate(dateProofing)}</b>
                             </div>
                         </div>
                         {currentCountDown === false && 
@@ -539,13 +390,13 @@ class Timer extends Component {
                                     <div className={timerStyles.basicTxt}><Text tid="LaunchTimerFrom" /></div>
                                     <div className={timerStyles.wrapperPlay}>
                                         <span><Text tid="now" /> <span>({potentialStart})</span></span>
-                                        <div role="presentation" aria-labelledby="launch" id="launch" onFocus={() => this.launchWW(new Date())} onClick={() => this.launchWW(new Date())} className={timerStyles.buttonStart} />
+                                        <div role="presentation" aria-labelledby="launch" id="launch" onClick={() => this.launchWW(new Date())} className={timerStyles.buttonStart} />
                                     </div>
                                     {toolate === false && <Fragment>
                                         <div className={timerStyles.basicTxt}> <Text tid="or" /> </div>
                                         <div className={timerStyles.wrapperPlay}> 
                                             <span><a href="#defineSchedule">{`${hourNow}:${minutesNow}`}</a></span>
-                                            <div role="presentation" aria-labelledby="launch" id="launch" onFocus={() => this.launchWW(now)} onClick={() => this.launchWW(now)} className={timerStyles.buttonStart} />
+                                            <div role="presentation" aria-labelledby="launch" id="launch" onClick={() => this.launchWW(now)} className={timerStyles.buttonStart} />
                                         </div>
                                     </Fragment>
                                     }
@@ -564,53 +415,18 @@ class Timer extends Component {
                 <Modal display={display} close={this.displayModalHowLong} data={data} />
             </section>
             <Save data={dataForSave} />
-            <div className={timerStyles.board}>
-                <div className={`${timerStyles.timeline} ${timerStyles[`hover${hoveredStripe}`]}`}>
-                    <div className={timerStyles.marker}>{`${hourNow}:${minutesNow}`}</div>
-                    <div className={`${timerStyles.marker} ${timerStyles.marker1}`}><ExtractMinutsAndSecondsFromDate objDate={startProofingHour} /></div>
-                    <div className={`${timerStyles.marker} ${timerStyles.marker2}`} style={{"left": `${createDoughPercent}%`}}><ExtractMinutsAndSecondsFromDate objDate={startAutolyse} /></div>
-                    <div className={`${timerStyles.marker} ${timerStyles.marker3}`} style={{"left": `${AddLeavinPercent}%`}}><ExtractMinutsAndSecondsFromDate objDate={addLeavin} /></div>
-                    <div className={`${timerStyles.marker} ${timerStyles.marker4}`} style={{"left": `${preshapingPercent}%`}}><ExtractMinutsAndSecondsFromDate objDate={afterFermentation} /></div>
-                    <div className={`${timerStyles.marker} ${timerStyles.marker5}`} style={{"left": `${shapingPercent}%`}}><ExtractMinutsAndSecondsFromDate objDate={timeAfterFermentation} /></div>
-                    {saf}
-                
-                    {currentCountDown && <div className={`${timerStyles.countdown}`} style={{"left": `${countDownPercent}%`}}></div>}
+            <Timeline
+                schedule={schedule}
+                currentCountDown={currentCountDown}
+                hrHour={{hourNow, minutesNow}}
+                timeTotal={timeTotal}
+                now={now}
+                end={endTimeStamp}
+            />
 
-                    <div title={FuncText("Proofing")} onMouseOver={() => this.showHour(5)} onFocus={() => this.showHour(5)} className={`${timerStyles.stripe} ${timerStyles.stripe1}`} style={{"width": "100%"}}>
-                        <Text tid="Proofing" />
-                    </div>
-                    <div title={FuncText("doughRest")} onMouseOver={() => this.showHour(4)} onFocus={() => this.showHour(4)} className={`${timerStyles.stripe} ${timerStyles.stripe2}`} style={{"width": `${shapingPercent}%`}}>
-                        <Text tid="doughRest" />
-                    </div>
-                    <div title={FuncText("bulkFermentation")} onMouseOver={() => this.showHour(3)} onFocus={() => this.showHour(3)} className={`${timerStyles.stripe} ${timerStyles.stripe3}`} style={{"width": `${preshapingPercent}%`}}>
-                        <Text tid="bulkFermentation" />
-                    </div>
-                    <div title={FuncText("autolyse")} onMouseOver={() => this.showHour(2)} onFocus={() => this.showHour(2)} className={`${timerStyles.stripe} ${timerStyles.stripe4}`} style={{"width": `${AddLeavinPercent}%`}}>
-                        <Text tid="autolyse" />
-                    </div>
-                    <div title={FuncText("leavin")} onMouseOver={() => this.showHour(1)} onFocus={() => this.showHour(1)} className={`${timerStyles.stripe} ${timerStyles.stripe5}`} style={{"width": `${createDoughPercent}%`}}>
-                        <Text tid="leavin" />
-                    </div>
-
-                    <span>{timeTotal}</span>
-                
-            </div>
-            {totalScopeTimelineMinuts > 120 ?
-            <div className={timerStyles.cycle}>
-                <div className={timerStyles.grid} style={{"left": `${firstHourPercent}%`}}>{FirstHour}h</div>
-                {items}
-            </div>
-                : 
-            <div className={timerStyles.cycle}>
-                <div className={timerStyles.grid} style={{"left": `${firstMinutPercent}%`}}>{FirstMinute}</div>
-                {items}
-            </div>
-            }
-          </div>
         </Fragment>
         )
     }
 };
-
 
 export default Timer;
