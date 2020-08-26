@@ -8,11 +8,11 @@ import Ext from "./ext.js";
 import Save from "./save.js";
 import { Proofing, Bulkproofing } from "./infos.js";
 import { convertMinutsToHuman, extractMinutsFromDate, twoDigits, decimalToSeconds, checkTime } from "../functions/tools.js";
-import { Text, FuncText } from '../containers/language';
+import { Text } from '../containers/language';
 
 
 /* Minutes between pre shaping and shaping */
-const preSetTiming = 1;
+const preSetTiming = 30;
 let timeWithoutStretchAndFold = 90;
 // let temps;
 
@@ -81,6 +81,9 @@ class Timer extends Component {
             } else {
                 this.redispatchValues();
             }
+        } else {
+            /* initialisation */
+            this.changeHourWithDate(new Date());
         }
         
         // return newExisting;

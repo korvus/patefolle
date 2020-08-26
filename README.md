@@ -33,3 +33,7 @@
 ---
 In french
 - [For french - Les différentes étape de la boulange](http://technomitron.aainb.com/la-fermentation/etapes-de-la-fermentation/)
+
+### license
+
+Do what you want with the code!
