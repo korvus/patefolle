@@ -50,8 +50,11 @@
 }
 
 .blocks span{
+    /* caché des tooltips donc modifié.
     overflow: hidden;
     display: block;
+    */
+    display: inline-block;
     width: 100%;
     margin: 5px 0;
 }

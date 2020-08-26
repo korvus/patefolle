@@ -21,9 +21,9 @@ export const extractMinutsFromDate = (dateObj) => {
     let minuts = dateObj.getMinutes();
     minuts = twoDigits(minuts);
     minuts = twoDigits(minuts);
-    // return hours+":"+minuts;
+    return hours+":"+minuts;
     // IF you want the seconds on the stretch & fold step discomment next line.
-    return hours+":"+minuts+":"+twoDigits(dateObj.getSeconds());
+    // return hours+":"+minuts+":"+twoDigits(dateObj.getSeconds());
 }
 
 export const roundMinutes = (dateObj) => {
@@ -68,6 +68,46 @@ const noun = {
     "en": ["Recipe", "Dough", "Bread", "Pâte", "Boule", "Sourdough", "Baguette"],
     "fr": ["Première du nom", "Soyeuse", "Fraîche", "Folle", "Terrible", "Génial", "Doux", "Incroyable", "Personnalisé", "", "Française"]
 };
+
+const stepsLangs = {
+    "en": [
+        ["You probably just prepared the yeast.", "", "./notifs/step0.png"],
+        ["Time to prepare the first dough.", "Mix the flour and the water.", "./notifs/step1.png"],
+        ["Time to add your leavin to the dough", "And don't forget to mix it strongly", "./notifs/step2.png"],
+        ["Time to pre-shape", "serious things starting!", "./notifs/step3.png"],
+        ["Time to shape", "Add some tension into the dough", "./notifs/step4.png"],
+        ["Bring it to the hoven!", "it's ready to cook, according to your settings!", "./notifs/step5.png"]
+    ],
+    "fr": [
+        ["Vous venez probablement juste de nourrir le levain.","Attendez pour la prochaine étape", "./notifs/step0.png"],
+        ["Préparez le pâton.", "Le pâton est juste un mélange d'eau et de farine", "./notifs/step1.png"],
+        ["Ajoutez le levain dans le pâton.","Ajoutez la dose que vous avez définit dans la pâte.", "./notifs/step2.png"],
+        ["Boulage","Façonnez la pâte de manière à lui donner de la force, et laissez-la se reposer.", "./notifs/step3.png"],
+        ["Façonnage","Cette étape consiste simplement à lui marqué sa forme de boule. Le repos qui suit est considéré comme l'apprêt.", "./notifs/step4.png"],
+        ["Mettez le pain au four !", "C'est l'étape qu'on appelle tout simplement l'enfournement ;)", "./notifs/step5.png"]
+    ]
+};
+
+const stretchTranslations = {
+    "en": [
+        ["Stretch and Fold!", "quick & dirty!", "./notifs/saf.png"]
+    ],
+    "fr": [
+        ["Rabat", "opérez un rabat rapide sur la pate", "./notifs/saf.png"]
+    ]
+}
+
+export const stretchAndFoldDatas = () => {
+    const lang = getCurrentLanguage();
+    const safSentences = stretchTranslations;
+    return safSentences[lang];
+}
+
+export const steps = () => {
+    const lang = getCurrentLanguage();
+    const steps = stepsLangs;
+    return steps[lang];
+}
 
 export const randomName = () => {
     const lang = getCurrentLanguage();

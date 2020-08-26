@@ -13,13 +13,13 @@ export function LanguageProvider({ children }) {
     const [userLanguage, setUserLanguage] = useState('en');
 
     const provider = {
-        userLanguage,
-        dictionary: dictionaryList[userLanguage],
-        userLanguageChange: selected => {
-            const newLanguage = languageOptions[selected] ? selected : 'en'
-            setUserLanguage(newLanguage);
-            window.localStorage.setItem('patefolle-lang', newLanguage);
-        }
+      userLanguage,
+      dictionary: dictionaryList[userLanguage],
+      userLanguageChange: selected => {
+        const newLanguage = languageOptions[selected] ? selected : 'en'
+        setUserLanguage(newLanguage);
+        window.localStorage.setItem('patefolle-lang', newLanguage);
+      }
     };
 
   return (
@@ -31,16 +31,15 @@ export function LanguageProvider({ children }) {
 
 // get text according to id & current language
 export function Text({ tid }) {
-    const languageContext = useContext(LanguageContext);
-    // console.log(languageContext.dictionary[tid]);
-    let str = languageContext.dictionary[tid] ? languageContext.dictionary[tid] : "";
-    return str;
+  const languageContext = useContext(LanguageContext);
+  let str = languageContext.dictionary[tid] ? languageContext.dictionary[tid] : "";
+  return str;
 };
 
 export function FuncText(tid) {
-    const lang = getCurrentLanguage();
-    let str = dictionaryList[lang][tid] ? dictionaryList[lang][tid] : "";
-    return str;
+  const lang = getCurrentLanguage();
+  let str = dictionaryList[lang][tid] ? dictionaryList[lang][tid] : "";
+  return str;
 };
 
 export function getCurrentLanguage () {

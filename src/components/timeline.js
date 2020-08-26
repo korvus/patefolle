@@ -1,7 +1,10 @@
 import React, {Component} from "react";
 import { Text, FuncText } from '../containers/language';
 import timerStyles from "../styles/timeline.module.css";
-import { ExtractMinutsAndSecondsFromDate, roundMinutes, extractMinutsFromDate } from "../functions/tools.js";
+import { ExtractMinutsAndSecondsFromDate, steps, stretchAndFoldDatas, roundMinutes, extractMinutsFromDate } from "../functions/tools.js";
+
+let officialStep = 0;
+let snap = 0;
 
 class Timeline extends Component {
     constructor(props) {
@@ -20,7 +23,8 @@ class Timeline extends Component {
             firstMinutPercent: 0,
             FirstHour: 0, 
             FirstMinute: 0,
-            countDownPercent: 0
+            countDownPercent: 0,
+            schedule: []
         };
     }
 
@@ -62,30 +66,125 @@ class Timeline extends Component {
         const start = new Date(now).getTime();
 
         const { totalScopeTimeSeconds } = this.totalScope();
-        let countDownPercent   = this.getPercentForTimelineInSeconds( totalScopeTimeSeconds, start, new Date());
+        let countDownPercent = this.getPercentForTimelineInSeconds( totalScopeTimeSeconds, start, new Date());
         countDownPercent = countDownPercent > 100 ? 100 : countDownPercent;
         this.setState({ countDownPercent });
     }
 
+    findClosestStep = (arrayOfSteps) => {
+        const now = new Date();
+        let closest = Infinity;
+
+        Array.prototype.forEach.call(arrayOfSteps, (dateStocked, i) => {
+            const d = new Date(dateStocked);
+            // On boucle sur le tableau d'instants. Si maintenant est avant l'evenement ET si l'evenement est avant l'infini (pour le premier at least); 
+            if (d >= now && d < closest) {
+                // console.log("loop at : ", i ,"datestocked is : ",d.getHours(),":",d.getMinutes(), "now is : ", now.getHours(),":", now.getMinutes(), "closest is : ", closest);
+                closest = d;
+                snap = i - 1;
+            }
+
+            if(now > new Date(arrayOfSteps[arrayOfSteps.length - 1])){
+                snap = arrayOfSteps.length - 1;
+            }
+            i++;
+        });
+
+        return snap;
+    }
+
+    displayPush = (step, arrayOfSteps) => {
+        const stepsSentences = steps();
+        if(officialStep === arrayOfSteps.length - 1){
+            // Doit faire la dernière notif;
+            this.notifyMe(stepsSentences[step]);
+            officialStep = 0;
+            snap = 0;
+            this.fullFillSchedule();
+        } else {
+            this.notifyMe(stepsSentences[step]);
+            return;
+        }
+        officialStep++;
+    }
+
+    
+    notifyMe = (words) => {
+        if (!("Notification" in window)) {
+          alert("Ce navigateur ne supporte pas les notifications desktop");
+        } else if (Notification.permission === "granted") {
+          // Si c'est ok, créons une notification
+          new Notification(words[0], {
+              body:words[1],
+              icon:words[2]
+            });
+        } else if (Notification.permission !== 'denied') {
+
+          Notification.requestPermission(function (permission) {
+            if(!('permission' in Notification)) {
+              Notification.permission = permission;
+            }
+
+            if (permission === "granted") {
+              new Notification(words, {icon: "./notifs/watch.svg", body: "./notifs/watch.svg"});
+            }
+          });
+        }
+    }
+
     countDownLoop = () => {
-        console.log("--");
+        const { schedule } = this.state;
         this.defineCountDown();
+
+        // as long we don't get the schedule, we loop on it.
+        if(schedule.length === 0){
+            this.fullFillSchedule();
+        } else {
+            const currentStep = this.findClosestStep(schedule);
+            // Stay lock to 0 - 0 after despite reinit
+            // console.log("officialStep & currentStep", officialStep, currentStep);
+            // console.log("------------");
+            if(officialStep !== currentStep){
+                // console.log("diff");
+                officialStep = currentStep;
+                this.displayPush(currentStep, schedule);
+            }
+        }
 
         setTimeout(() => {
             if(this.props.currentCountDown){
                 this.countDownLoop()
+            } else {
+                officialStep = 0;
+                snap = 0;
             }
         }, 1000);
-        /*} else {
-            clearTimeout(cd);
-        }*/
+    }
 
+    fullFillSchedule = () => {
+        if(localStorage.getItem("patefolle-cd") !== null){
+            let countDownExisting = JSON.parse(localStorage.getItem("patefolle-cd"));
+            if(countDownExisting.active){
+                const stepsSentences = steps();
+                if(countDownExisting.saf.length > 0){
+                    const safSentences = stretchAndFoldDatas();
+                    if(countDownExisting.milestones.length === 6){
+                        countDownExisting.milestones.splice(3, 0, ...countDownExisting.saf);
+                    }
+                    if(stepsSentences.length === 6){
+                        const alertSaF = Array.from({ length: countDownExisting.saf.length }).fill(safSentences).flat();
+                        stepsSentences.splice(3, 0, ...alertSaF);
+                    }
+                }
+                this.setState({schedule: countDownExisting.milestones});
+            }
+        }
     }
 
     definePercent = () => {
         const now = this.props.now ?? new Date();
         const start = new Date(now).getTime();
-        const { dateRest, dateFermentation, dateZenith, dateAutolyse } = this.props.schedule;
+        const { dateRest, dateFermentation, dateZenith, dateAutolyse } = this.props.milestones;
 
         const { totalScopeTimelineMinuts } = this.totalScope();
 
@@ -117,10 +216,12 @@ class Timeline extends Component {
     }
 
     componentDidUpdate(prevProps){
-        if(JSON.stringify(prevProps.schedule) !== JSON.stringify(this.props.schedule)){
+        if(JSON.stringify(prevProps.milestones) !== JSON.stringify(this.props.milestones)){
             this.setup();
         }
         if(prevProps.currentCountDown !== this.props.currentCountDown) {
+            this.displaySplice();// The display of minuts in bottom
+            this.fullFillSchedule();
             this.countDownLoop();
         }
     }
@@ -139,16 +240,16 @@ class Timeline extends Component {
         });
     }
 
-    displayHours = () => {
+    displaySplice = () => {
         /* Hours */
         const now = this.props.now ?? new Date();
-        const { start } = this.state;
+        const start = now.getTime();
 
         const { totalScopeTimelineMinuts, totalScopeTimeSeconds } = this.totalScope();
         const closestMinut = this.roundSeconds(now);
 
-        const scopeNumberHours = Math.ceil(totalScopeTimelineMinuts/60);
-        const scopeNumberMinuts = Math.ceil(totalScopeTimeSeconds)/60;
+        const scopeNumberHours = Math.ceil((totalScopeTimelineMinuts+15)/60);
+        const scopeNumberMinuts = Math.ceil(totalScopeTimeSeconds+1000)/60;
 
         const closestHour = roundMinutes(now);
 
@@ -175,10 +276,11 @@ class Timeline extends Component {
 
     defineSaF = () => {
         const { totalScopeTimelineMinuts } = this.totalScope();
-        const { listSaF } = this.props.schedule;
+        const { listSaF } = this.props.milestones;
         const start = new Date(this.props.now).getTime();
         
         const saf = [];
+        // console.log("SAF timeline definition --- ");
         for (let b = 0; b < listSaF.length; b++) {
             const safMinut = listSaF[b];
             const safMoment = extractMinutsFromDate(safMinut);
@@ -205,8 +307,8 @@ class Timeline extends Component {
         const { totalScopeTimelineMinuts } = this.totalScope();
         const { currentCountDown, hrHour, timeTotal } = this.props;
         const { hourNow, minutesNow } = hrHour;
-        const { dateProofing, dateRest, dateFermentation, dateZenith, dateAutolyse } = this.props.schedule;
-        
+        const { dateProofing, dateRest, dateFermentation, dateZenith, dateAutolyse } = this.props.milestones;
+
         return (
             <div className={timerStyles.board}>
                 <div className={`${timerStyles.timeline} ${timerStyles[`hover${hoveredStripe}`]}`}>
@@ -222,7 +324,7 @@ class Timeline extends Component {
                     <div className={`${timerStyles.marker} ${timerStyles.marker5}`} style={{"left": `${shapingPercent}%`}}>
                         <ExtractMinutsAndSecondsFromDate objDate={dateRest} /></div>
                     {this.defineSaF()}
-                
+  
                     {currentCountDown && <div className={`${timerStyles.countdown}`} style={{"left": `${countDownPercent}%`}}></div>}
 
                     <div 
@@ -270,12 +372,12 @@ class Timeline extends Component {
                 {totalScopeTimelineMinuts > 120 ?
                 <div className={timerStyles.cycle}>
                     <div className={timerStyles.grid} style={{"left": `${firstHourPercent}%`}}>{FirstHour}h</div>
-                    {this.displayHours()}
+                    {this.displaySplice()}
                 </div>
                     : 
                 <div className={timerStyles.cycle}>
                     <div className={timerStyles.grid} style={{"left": `${firstMinutPercent}%`}}>{FirstMinute}</div>
-                    {this.displayHours()}
+                    {this.displaySplice()}
                 </div>
                 }
             </div>)

@@ -35,7 +35,7 @@ class Home extends Component {
         autolyse: 90,
         fermentation: 240,
         proofing: 500,
-        saf: []
+        saf: 0
       }
     };
   }
@@ -184,7 +184,7 @@ class Home extends Component {
         zenith: parseInt(params[4][0]),
         autolyse: parseInt(params[5][0]),
         fermentation: parseInt(params[6][0]),
-        saf: new Array(parseInt(params[7][0])),
+        saf: parseInt(params[7][0]),
         proofing: parseInt(params[8][0])
       }
     }, () => {
@@ -206,10 +206,6 @@ class Home extends Component {
     if(currentCountDown === true){
       if(!window.confirm(FuncText("countdownRunning"))){
         return;
-      } else {
-        navigator.serviceWorker.controller.postMessage({
-          type: "CANCEL"
-        });
       }
     }
 
@@ -223,7 +219,7 @@ class Home extends Component {
         autolyse: datas.autolyse,
         fermentation: datas.fermentation,
         proofing: datas.proofing,
-        saf: datas.saf
+        saf: datas.saf.length
       }      
     }, () => {
       this.calculateSourdough();

@@ -68,5 +68,7 @@
     "bulkproofingExp2":"Vous pouvez rallonger d'autant ce processus en jouant sur la température. Dans un endroit frais, elle mettra plus de temps à se développer.",
     "proofingExp1":"Now that your breads have been shaped, they need time to rise again and be filled with carbon dioxide again before you put them into the oven for baking.",
     "proofingExp2":"you can again delay the process by placing the breads in a cool place.",
-    "countdownRunning": "Il y a actuellement une recette un compte à rebours en train de s'exécuter. En confirmant, vous allez l'annuler."
+    "countdownRunning": "Il y a actuellement une recette un compte à rebours en train de s'exécuter. En confirmant, vous allez l'annuler.",
+    "settingsaf":"Mettez un nombre d'opération de rabat compris entre 0 et 10:",
+    "automaticDispatch": "Chaque rabat sera automatiquement réparti dans [temps du pointage - 90 minutes]. Et ce, afin de laisser la pâte travailler."
 }

@@ -16,6 +16,14 @@ const preSetTiming = 1;
 let timeWithoutStretchAndFold = 90;
 // let temps;
 
+const getNowHumanWay = () => {
+    const today = new Date();
+    const h = today.getHours();
+    let m = today.getMinutes();
+    m = checkTime(m);
+    return h + ":" + m;
+}
+
 class Timer extends Component {
     constructor(props) {
         super(props);
@@ -36,8 +44,8 @@ class Timer extends Component {
             safNumber: saf.length,
             timeSliceSaF: [],
             listSaF: saf,
-            dateProofing: new Date(),
-            potentialStart: "",
+            dateProofing: new Date(new Date().setMinutes(new Date().getMinutes() + 1)),
+            potentialStart: getNowHumanWay(),
             currentCountDown: false,
             worker: () => {},
             hourNow: 0
@@ -52,20 +60,27 @@ class Timer extends Component {
     askCountDown(){
         let countDownExisting = [];
         if(localStorage.getItem("patefolle-cd") !== null){
-          countDownExisting = JSON.parse(localStorage.getItem("patefolle-cd"));
-          const isRunning = countDownExisting.active;
-          this.setState({ currentCountDown: isRunning }, () => {
-            this.props.countDownFunc(this.state.currentCountDown);
-          });
-          if(isRunning){
-            const startMoment = countDownExisting.schedule[0];
-            this.startTime();
-            // Doit changer également avec le schedule stocké en théorie sur le cookie 
-            // plutot que le schedule fournit par le component d'au dessus
-            this.changeHourWithDate(new Date(startMoment));
-          } else {                
+            countDownExisting = JSON.parse(localStorage.getItem("patefolle-cd"));
+            const isRunning = countDownExisting.active;
+            this.setState({ currentCountDown: isRunning }, () => {
+                this.props.countDownFunc(this.state.currentCountDown);
+            });
+            if(isRunning){
+                const startMoment = countDownExisting.milestones[0];
+                const schedule = countDownExisting.schedule;
+                // autolyse, zenith, fermentation, proofing, saf
+                this.setState({ 
+                    autolyse: schedule[0],
+                    zenith: schedule[1],
+                    fermentation: schedule[2],
+                    proofing: schedule[3] 
+                }, () => {
+                    this.startTime();
+                    this.changeHourWithDate(new Date(startMoment));
+                });
+            } else {
                 this.redispatchValues();
-          }
+            }
         }
         
         // return newExisting;
@@ -73,13 +88,14 @@ class Timer extends Component {
 
     startTime = () => {
         const { dateProofing, toolate } = this.state;
-        var today = new Date();
-        var h = today.getHours();
-        var m = today.getMinutes();
+        const today = new Date();
+        const h = today.getHours();
+        let m = today.getMinutes();
         m = checkTime(m);
+        // console.log(" timer running ", new Date(today).getMinutes(), new Date(dateProofing).getMinutes(), today > dateProofing, this.state.toolate);
         if(today > dateProofing){
-            this.cancelCountdown();
-            this.setState({ toolate: true, currentCountDown: false }, () => {
+            this.setState({ toolate: true }, () => {
+                // console.log("dateProofing", dateProofing, today, new Date(dateProofing).getMinutes(), new Date(today).getMinutes(), today > dateProofing);
                 this.cancelCountdown();
             });
         } else {
@@ -95,10 +111,6 @@ class Timer extends Component {
                 this.startTime()
             }
         }, 2000);
-        /*} else {
-            clearTimeout(temps);
-        }*/
-
     }
 
     changeHourWithDate = (dateObj) => {
@@ -119,7 +131,12 @@ class Timer extends Component {
     }
 
     modifyZenith = (e) => {
-        this.setState({zenith: e.target.value},() => {this.redispatchValues();})
+        const zenithValue = e.target.value;
+        let { autolyse } = this.state;
+        if(parseInt(zenithValue) < parseInt(autolyse)){
+            autolyse = zenithValue;
+        }
+        this.setState({zenith: zenithValue, autolyse: autolyse},() => {this.redispatchValues();})
     }
 
     modifyFermentation = (e) => {
@@ -189,9 +206,15 @@ class Timer extends Component {
     }    
 
     redispatchValues = () => {
-        const { safNumber, now } = this.state;
+        const { now } = this.state;
+        const safNumber = this.props.schedule.saf;
+        // console.log("safNumber", this.props.schedule.saf);
         const [step1, step2, step3, step4, step5] = this.setupAll(now);
+        const today = new Date();
+        const toolate = today > new Date(step5).getTime() ? true : false;
+        // if(step5 > )
         this.setState({
+            toolate: toolate,
             dateAutolyse: step1,
             dateZenith: step2,
             dateFermentation: step3,
@@ -205,27 +228,34 @@ class Timer extends Component {
 
     launchWW = (start) => {
         // this.changeHourWithDate(start);
-        this.setState({now: start, currentCountDown: true}, () => {
+        this.setState({now: start}, () => {
 
+            const safNumber = this.props.schedule.saf;
+            // Should be : autolyse, zenith, fermentation, proofing, saf
+            const { autolyse, zenith, fermentation, proofing, listSaF } = this.state;
+            const durations = [ autolyse, zenith, fermentation, proofing ];
             const allSteps = this.setupAll(start);
 
             const milestones = [start, ...allSteps];
+            const schedule = [...durations];
 
-            const initObj = {active: true, schedule: milestones}
+            const initObj = {active: true, milestones, schedule, saf: listSaF}
             const toSave = JSON.stringify(initObj);
             localStorage.setItem("patefolle-cd", toSave);
 
-            const [step1, step2, step3, step4, step5] = this.setupAll(start);
+            const [step1, step2, step3, step4, step5] = allSteps;
             this.setState({
                 dateAutolyse: step1,
                 dateZenith: step2,
                 dateFermentation: step3,
                 dateRest: step4,
-                dateProofing: step5
+                dateProofing: step5,
+                toolate: false,
+                currentCountDown: true
             }, () => {
+                this.setNumberOfStretchAndFold(safNumber);
                 this.startTime();
             })
-            // this.startTime();
         });
     }
 
@@ -236,8 +266,9 @@ class Timer extends Component {
     }
 
     cancelCountdown = () => {
-        this.setState({currentCountDown: false});
-        this.resetSessionCountDown();
+        this.setState({currentCountDown: false}, () => {
+            this.resetSessionCountDown();
+        });
     }
 
     /* {/*onMouseLeave={() => this.closeTooltip()}} */
@@ -262,7 +293,7 @@ class Timer extends Component {
             toolate
         } = this.state;
 
-        const schedule = { listSaF, dateProofing, dateAutolyse, dateZenith, dateFermentation, dateRest };
+        const milestones = { listSaF, dateProofing, dateAutolyse, dateZenith, dateFermentation, dateRest };
 
         const hourNow = twoDigits(now.getHours());
         const minutesNow = twoDigits(now.getMinutes());
@@ -275,6 +306,7 @@ class Timer extends Component {
             timeSlice: timeSliceSaF,
             convertMinuts: convertMinutsToHuman
         }
+        // console.log(data.safNumber);
 
         const endTimeStamp = dateProofing.getTime();
         const startTimeStamp = now.getTime();
@@ -303,7 +335,7 @@ class Timer extends Component {
                         <label htmlFor="moment">
                             <Text tid="countdownStart" />
                         </label>
-                        <input value={`${hourNow}:${minutesNow}`} aria-labelledby="moment" onChange={(e) => this.modifyHour(e)} className={timerStyles.moment} type="time" id="moment" />
+                        <input value={`${hourNow}:${minutesNow}`} aria-labelledby="moment" onChange={(e) => this.modifyHour(e)} className={timerStyles.moment} type="time" id="moment" disabled={currentCountDown} />
                         <Text tid="whenStartCD" />
                     </div>
                     <div className={timerStyles.main}>
@@ -311,7 +343,7 @@ class Timer extends Component {
                             <div className="left">
                                 <label htmlFor="autolyse">
                                     <Text tid="autolysisTimer" />
-                                    <Ext title={FuncText("autolyseTtl")} link={FuncText("autolyseYoutube")} />
+                                    <Ext title="autolyseTtl" link="autolyseYoutube" />
                                 </label>
                                 <input value={autolyse} onChange={(e) => this.modifyAutolyse(e.target.value)} aria-labelledby="autolyse" type="range" id="autolyse" min="0" max={limitAutolyse} disabled={currentCountDown} />
                                 <span><u>{convertMinutsToHuman(autolyse)}</u></span> 
@@ -324,7 +356,7 @@ class Timer extends Component {
                             <div className="left">
                                 <label htmlFor="yeast">
                                     <Text tid="yeastTopReached" />
-                                    <Ext title={FuncText("YeastTtl")} link={FuncText("yeastTopYoutube")} />
+                                    <Ext title="YeastTtl" link="yeastTopYoutube" />
                                 </label>
                                 <input onChange={(e) => this.modifyZenith(e)} value={zenith} aria-labelledby="sourdough" id="sourdough" min="30" max="720" step="5" type="range" disabled={currentCountDown} />
                                 <span><u>{convertMinutsToHuman(zenith)}</u></span>
@@ -337,7 +369,7 @@ class Timer extends Component {
                             <div className="left">
                                 <label htmlFor="fermentation">
                                     <Text tid="bulkFermentationDuration" />
-                                    <Ext title={FuncText("bulkFermentationttl")} link={FuncText("bulkFermentationLink")} />
+                                    <Ext title="bulkFermentationttl" link="bulkFermentationLink" />
                                     <Note content={<Bulkproofing />} />
                                 </label>
                                 <input onChange={(e) => this.modifyFermentation(e)} value={fermentation} type="range" aria-labelledby="fermentation" id="fermentation" min="120" max="1200" step="5" disabled={currentCountDown} />
@@ -347,7 +379,7 @@ class Timer extends Component {
                                 <label className={timerStyles.noPadding} htmlFor="fermentation">
                                     <span role="presentation" onClick={() => this.displayModalHowLong()} className={timerStyles.modalHowLong}>
                                         <Text tid="addSomeSaF" />
-                                        <Ext title={FuncText("StretchAndFoldttl")} link={FuncText("safLink")} />
+                                        <Ext title="StretchAndFoldttl" link="safLink" />
                                     </span> 
                                     {safNumber > 0 && <span className={timerStyles.saf}><b>{safNumber}</b></span>}
                                 </label>
@@ -362,7 +394,7 @@ class Timer extends Component {
                                     <Text tid="restDough" />
                                     <span> -> </span> 
                                     <Text tid="shapingStart" />
-                                    </span><Ext title={FuncText("shapingAndPreshappingttl")} link={FuncText("shapingLink")} />
+                                    </span><Ext title="shapingAndPreshappingttl" link="shapingLink" />
                             </div>
                             <div className={timerStyles.right}>
                                 <b className={timerStyles.noMargin}>{extractMinutsFromDate(dateRest)}</b>
@@ -372,7 +404,7 @@ class Timer extends Component {
                             <div className="left">  
                                 <label htmlFor="proofing">
                                     <Text tid="Proofing" />
-                                    <Ext title={FuncText("fermentedTtl")} link={FuncText("fermentedLink")} />
+                                    <Ext title="fermentedTtl" link="fermentedLink" />
                                     <Note content={<Proofing />}/>
                                 </label>
                                 <input onChange={(e) => this.modifyProofing(e)} value={proofing} type="range" aria-labelledby="proofing" id="proofing" min="120" max="1200" step="5" disabled={currentCountDown} />
@@ -416,7 +448,7 @@ class Timer extends Component {
             </section>
             <Save data={dataForSave} />
             <Timeline
-                schedule={schedule}
+                milestones={milestones}
                 currentCountDown={currentCountDown}
                 hrHour={{hourNow, minutesNow}}
                 timeTotal={timeTotal}

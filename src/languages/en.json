@@ -67,5 +67,7 @@
   "bulkproofingExp2":"Note you can delay this process by placing the breads in a cool place.",
   "proofingExp1":"Now that your breads have been shaped, they need time to rise again and be filled with carbon dioxide again before you put them into the oven for baking.",
   "proofingExp2":"you can again delay the process by placing the breads in a cool place.",
-  "countdownRunning": "There is currently a countdown. By confirming, you will cancel it."
+  "countdownRunning": "There is currently a countdown. By confirming, you will cancel it.",
+  "settingsaf":"Set a number of Stretch &amp; Fold between 0 and 10:",
+  "automaticDispatch": "They will be automatically dispatched in the time scope minus 90 minuts for letting the dough working."
 }

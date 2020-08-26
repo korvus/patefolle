@@ -1,8 +1,11 @@
 import React from "react";
 import ModaleStyle from "../styles/modal.module.css";
+import { Text } from '../containers/language';
 
 export default function Modale(props) {
     const {display, close, data} = props;
+    const safNumber = data.safNumber ?? "0";
+    // console.log("props data", data);
     const items = [];
 
     const fermentation = data.timeFermentationMin;
@@ -15,11 +18,10 @@ export default function Modale(props) {
     // const scopeInMinutes = Math.round(fermentation - 90);
     const TotalPercentToDivide = 100-percentToRemove;
 
-    const slicePercent = TotalPercentToDivide/(parseInt(data.safNumber)+1);
+    const slicePercent = TotalPercentToDivide/(parseInt(safNumber)+1);
 
-    for (let a = 0; a < data.safNumber; a++) {
-        const timeToHuman = data.convertMinuts(data.timeSlice+(a*(data.timeSlice)));
-        // const timeToHuman = data.convertMinuts(Math.round(data.timeSlice+(a*(data.timeSlice))));
+    for (let a = 0; a < safNumber; a++) {
+        const timeToHuman = data.convertMinuts(Math.round(data.timeSlice+(a*(data.timeSlice))));
 
         items.push(<div style={{"left": `${slicePercent+(a*slicePercent)}%`}} title={timeToHuman} className={ModaleStyle.saf} key={a}></div>)
     }
@@ -31,17 +33,17 @@ export default function Modale(props) {
                 <div>
                     <div className={ModaleStyle.range}>
                         <label htmlFor="number">
-                            Set a number of Stretch &amp; Fold between 0 and 10:
+                            <Text tid="settingsaf" />
                         </label>
 
-                        <input value={data.safNumber} type="range" aria-labelledby="number" onChange={(e) => data.setNumberOfStretchAndFold(e.target.value)} id="number" min="0" max="10" step="1" />
+                        <input value={safNumber} type="range" aria-labelledby="number" onChange={(e) => data.setNumberOfStretchAndFold(e.target.value)} id="number" min="0" max="10" step="1" />
                         <div className={ModaleStyle.scope}>
                             {items}
                             <div style={{"left": `${TotalPercentToDivide}%`}} className={ModaleStyle.limit}></div>
                             {data.timeFermentation}
                         </div>
                         <span>
-                            They will be automatically dispatched in the time scope minus 90 minuts for letting the dough working.
+                            <Text tid="automaticDispatch" />
                         </span>
                     </div>
                 </div>
