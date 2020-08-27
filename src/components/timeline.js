@@ -2,9 +2,12 @@ import React, {Component} from "react";
 import { Text, FuncText } from '../containers/language';
 import timerStyles from "../styles/timeline.module.css";
 import { ExtractMinutsAndSecondsFromDate, steps, stretchAndFoldDatas, roundMinutes, extractMinutsFromDate } from "../functions/tools.js";
+import alarm from "../sounds/alarm.mp3"
+let audio = new Audio(alarm);
 
 let officialStep = 0;
 let snap = 0;
+
 
 class Timeline extends Component {
     constructor(props) {
@@ -111,12 +114,15 @@ class Timeline extends Component {
     
     notifyMe = (words) => {
         if (!("Notification" in window)) {
-          alert("Ce navigateur ne supporte pas les notifications desktop");
+          console.warn("this browser or device don't support notifications");
         } else if (Notification.permission === "granted") {
-          // Si c'est ok, créons une notification
-          new Notification(words[0], {
-              body:words[1],
-              icon:words[2]
+            // Si c'est ok, créons une notification
+            audio.currentTime = 0;
+            audio.play();
+            console.log("audio", audio);
+            new Notification(words[0], {
+                body:words[1],
+                icon:words[2]
             });
         } else if (Notification.permission !== 'denied') {
 
@@ -126,7 +132,8 @@ class Timeline extends Component {
             }
 
             if (permission === "granted") {
-              new Notification(words, {icon: "./notifs/watch.svg", body: "./notifs/watch.svg"});
+                audio.play();
+                new Notification(words, {icon: "./notifs/watch.svg", body: "./notifs/watch.svg"});
             }
           });
         }
