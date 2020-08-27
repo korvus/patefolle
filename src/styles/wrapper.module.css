@@ -40,7 +40,7 @@
     width: 100%;
 }
 
-.range .text{
+.range .text {
     padding: 2rem;
     border: 2px solid #888;
     border-radius: 2rem;
@@ -340,9 +340,21 @@ dd ul{
     .save {
         margin: 0;
     }
-    .label{
-        text-align: center;
+
+    .balance .label label {
+        display: block;
     }
+
+    .range .text {
+        letter-spacing: 0;
+    }
+
+    .label{
+        text-align: left;
+        display: block;
+        margin-bottom: 1rem;
+    }
+
     .schedule .range {
         flex-direction: column;
     }
@@ -361,9 +373,17 @@ dd ul{
         display: none;
     }
 
-    .label{
-        display: block;
+    .wrapperPlay > span {
         margin-bottom: 1rem;
+    }
+
+    .launcher {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .launcher .basicTxt{
+        text-align: center;
     }
 
     .board {
