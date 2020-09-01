@@ -28,7 +28,6 @@ class Timer extends Component {
     constructor(props) {
         super(props);
         const { autolyse, fermentation, proofing, zenith, saf } = props.schedule;
-        console.log("saf.length", saf.length);
         this.state = {
             autolyse,
             fermentation,
@@ -42,7 +41,7 @@ class Timer extends Component {
             shaping: 0,
             dateRest: new Date(),
             displayModal: false,
-            safNumber: saf.length,
+            safNumber: saf,
             timeSliceSaF: [],
             listSaF: saf,
             dateProofing: new Date(new Date().setMinutes(new Date().getMinutes() + 1)),
@@ -190,6 +189,7 @@ class Timer extends Component {
     reinitSchedule = () => {
         const { autolyse, fermentation, proofing, zenith, saf} = this.props.schedule;
         this.setState({autolyse, fermentation, proofing, zenith, saf, safNumber: saf}, () => {
+            if(saf !== this.state.safNumber){this.reinitSchedule();}
             this.redispatchValues();
         })
     }
@@ -309,7 +309,6 @@ class Timer extends Component {
             timeSlice: timeSliceSaF,
             convertMinuts: convertMinutsToHuman
         }
-        // console.log(data.safNumber);
 
         const endTimeStamp = dateProofing.getTime();
         const startTimeStamp = now.getTime();
