@@ -28,6 +28,7 @@ class Timer extends Component {
     constructor(props) {
         super(props);
         const { autolyse, fermentation, proofing, zenith, saf } = props.schedule;
+        console.log("saf.length", saf.length);
         this.state = {
             autolyse,
             fermentation,
@@ -188,7 +189,7 @@ class Timer extends Component {
 
     reinitSchedule = () => {
         const { autolyse, fermentation, proofing, zenith, saf} = this.props.schedule;
-        this.setState({autolyse, fermentation, proofing, zenith, saf}, () => {
+        this.setState({autolyse, fermentation, proofing, zenith, saf, safNumber: saf}, () => {
             this.redispatchValues();
         })
     }
@@ -206,12 +207,10 @@ class Timer extends Component {
         const tmpStep4 = new Date(step4);
         const step5 = new Date(tmpStep4.setMinutes(tmpStep4.getMinutes() + parseInt(proofing)));
         return [step1, step2, step3, step4, step5];
-    }    
+    }
 
     redispatchValues = () => {
-        const { now } = this.state;
-        const safNumber = this.props.schedule.saf;
-        // console.log("safNumber", this.props.schedule.saf);
+        const { now, safNumber } = this.state;
         const [step1, step2, step3, step4, step5] = this.setupAll(now);
         const today = new Date();
         const toolate = today > new Date(step5).getTime() ? true : false;
@@ -233,8 +232,8 @@ class Timer extends Component {
         // this.changeHourWithDate(start);
         this.setState({now: start}, () => {
 
-            const safNumber = this.props.schedule.saf;
-            // Should be : autolyse, zenith, fermentation, proofing, saf
+            const safNumber = this.state.safNumber;
+
             const { autolyse, zenith, fermentation, proofing, listSaF } = this.state;
             const durations = [ autolyse, zenith, fermentation, proofing ];
             const allSteps = this.setupAll(start);
@@ -246,6 +245,7 @@ class Timer extends Component {
             const toSave = JSON.stringify(initObj);
             localStorage.setItem("patefolle-cd", toSave);
 
+            // Should be : autolyse, zenith, fermentation, proofing, saf
             const [step1, step2, step3, step4, step5] = allSteps;
             this.setState({
                 dateAutolyse: step1,
