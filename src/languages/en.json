@@ -69,5 +69,9 @@
   "proofingExp2":"you can again delay the process by placing the breads in a cool place.",
   "countdownRunning": "There is currently a countdown. By confirming, you will cancel it.",
   "settingsaf":"Set a number of Stretch &amp; Fold between 0 and 10:",
-  "automaticDispatch": "They will be automatically dispatched in the time scope minus 90 minuts for letting the dough working."
+  "automaticDispatch": "They will be automatically dispatched in the time scope minus 90 minuts for letting the dough working.",
+  "About": "About",
+  "personnalUse": "The original purpose is to be used for a personnal use.",
+  "reactCreateApp": "This website is developped with React Create App. You can grab the code source on ",
+  "website": "I made this website"
 }

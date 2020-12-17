@@ -1,7 +1,7 @@
 import React, {Component, Fragment} from "react";
-import timerStyles from "../styles/wrapper.module.css"
-import Title from "./title"
-import Modal from "./modalSandF"
+import timerStyles from "../styles/wrapper.module.css";
+import Title from "./title";
+import Modal from "./modalSandF";
 import Note from "./noteinfos";
 import Timeline from "./timeline.js";
 import Ext from "./ext.js";
@@ -9,7 +9,7 @@ import Save from "./save.js";
 import { Proofing, Bulkproofing } from "./infos.js";
 import { convertMinutsToHuman, extractMinutsFromDate, twoDigits, decimalToSeconds, checkTime } from "../functions/tools.js";
 import { Text } from '../containers/language';
-
+import About from "./about.js";
 
 /* Minutes between pre shaping and shaping */
 const preSetTiming = 30;
@@ -449,6 +449,7 @@ class Timer extends Component {
                 <Modal display={display} close={this.displayModalHowLong} data={data} />
             </section>
             <Save data={dataForSave} />
+            <About />
             <Timeline
                 milestones={milestones}
                 currentCountDown={currentCountDown}

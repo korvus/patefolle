@@ -119,7 +119,6 @@ class Timeline extends Component {
             // Si c'est ok, créons une notification
             audio.currentTime = 0;
             audio.play();
-            console.log("audio", audio);
             new Notification(words[0], {
                 body:words[1],
                 icon:words[2]
