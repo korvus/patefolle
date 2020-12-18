@@ -341,6 +341,19 @@ class Timer extends Component {
                         <Text tid="whenStartCD" />
                     </div>
                     <div className={timerStyles.main}>
+                    <div className={timerStyles.range}>
+                            <div className="left">
+                                <label htmlFor="yeast">
+                                    <Text tid="yeastTopReached" />
+                                    <Ext title="YeastTtl" link="yeastTopYoutube" />
+                                </label>
+                                <input onChange={(e) => this.modifyZenith(e)} value={zenith} aria-labelledby="sourdough" id="sourdough" min="30" max="720" step="5" type="range" disabled={currentCountDown} />
+                                <span><u>{convertMinutsToHuman(zenith)}</u></span>
+                            </div>
+                            <div className={timerStyles.right}>
+                                <b>{extractMinutsFromDate(dateZenith)}</b>
+                            </div>
+                        </div>
                         <div className={timerStyles.range}>
                             <div className="left">
                                 <label htmlFor="autolyse">
@@ -352,19 +365,6 @@ class Timer extends Component {
                             </div>
                             <div className={timerStyles.right}>
                                 <b>{extractMinutsFromDate(dateAutolyse)}</b>
-                            </div>
-                        </div>
-                        <div className={timerStyles.range}>
-                            <div className="left">
-                                <label htmlFor="yeast">
-                                    <Text tid="yeastTopReached" />
-                                    <Ext title="YeastTtl" link="yeastTopYoutube" />
-                                </label>
-                                <input onChange={(e) => this.modifyZenith(e)} value={zenith} aria-labelledby="sourdough" id="sourdough" min="30" max="720" step="5" type="range" disabled={currentCountDown} />
-                                <span><u>{convertMinutsToHuman(zenith)}</u></span>
-                            </div>
-                            <div className={timerStyles.right}>
-                                <b>{extractMinutsFromDate(dateZenith)}</b>
                             </div>
                         </div>
                         <div className={timerStyles.range}>
