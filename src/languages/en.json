@@ -71,6 +71,8 @@
   "settingsaf":"Set a number of Stretch &amp; Fold between 0 and 10:",
   "automaticDispatch": "They will be automatically dispatched in the time scope minus 90 minuts for letting the dough working.",
   "About": "About",
+  "cancelcd": "Cancel the countdown",
+  "cdLaunched": "Countdown launched",
   "personnalUse": "The original purpose is to be used for a personnal use.",
   "reactCreateApp": "This website is developped with React Create App. You can grab the code source on ",
   "website": "I made this website"

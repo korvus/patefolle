@@ -440,7 +440,12 @@ class Timer extends Component {
                         {currentCountDown !== false && 
                             <div className={timerStyles.starter}>
                                 <div className={timerStyles.launcher}>
-                                    <div className={timerStyles.basicTxt}>Countdown launched. <span className={timerStyles.lnk} onClick={() => this.cancelCountdown()}>Cancel the countdown</span>.</div>
+                                    <div className={timerStyles.basicTxt}>
+                                        <Text tid="cdLaunched" />.&nbsp;
+                                        <span className={timerStyles.lnk} onClick={() => this.cancelCountdown()}>
+                                            <Text tid="cancelcd" />
+                                        </span>.
+                                    </div>
                                 </div>
                             </div>
                         }
