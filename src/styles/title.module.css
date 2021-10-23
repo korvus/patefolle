@@ -8,6 +8,18 @@
 
 }
 
+.about::before {
+  position: absolute;
+  background: url(../pics/about.svg);
+  background-size: contain;
+  display: block;
+  height: 4rem;
+  width: 4rem;
+  content:"";
+  left: 0;
+  top: 0.5rem;  
+}
+
 .balance::before {
   position: absolute;
   background: url(../pics/balance.svg);
@@ -17,7 +29,7 @@
   width: 4rem;
   content:"";
   left: 0;
-  top: 0rem;
+  top: 0;
 }
 
 .timer::before {
@@ -29,7 +41,7 @@
   width: 4rem;
   content:"";
   left: 0;
-  top: 0rem;
+  top: 0;
 }
 
 .save::before {
@@ -41,5 +53,5 @@
   width: 5rem;
   content:"";
   left: 0;
-  top: 0rem;
+  top: 0;
 }

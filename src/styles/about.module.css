@@ -1,0 +1,12 @@
+.wrapper > div{
+    background: rgba(250,250,250, 0.8);
+}
+
+.wrapper p{
+    font-size: 1.3rem;
+    color: #222;
+}
+
+.wrapper p a{
+    color: #666;
+}

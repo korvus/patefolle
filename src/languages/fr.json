@@ -74,5 +74,11 @@
     "proofingExp2":"Ce processus peut-être en le mettant dans un endroit frais.",
     "countdownRunning": "Il y a actuellement une recette un compte à rebours en train de s'exécuter. En confirmant, vous allez l'annuler.",
     "settingsaf":"Mettez un nombre d'opération de rabat compris entre 0 et 10:",
-    "automaticDispatch": "Chaque rabat sera automatiquement réparti dans [temps du pointage - 90 minutes]. Et ce, afin de laisser la pâte travailler."
+    "automaticDispatch": "Chaque rabat sera automatiquement réparti dans [temps du pointage - 90 minutes]. Et ce, afin de laisser la pâte travailler.",
+    "cancelcd": "Annuler le décompte",
+    "cdLaunched": "Décompte lancé",
+    "personnalUse": "Le but premier de cette application est un usage personnel.",
+    "reactCreateApp": "Ce site a été créé avec React. Vous pouvez récupérer le code source sur ",
+    "website": "J'ai fait ce site",
+    "About": "A propos"
 }
