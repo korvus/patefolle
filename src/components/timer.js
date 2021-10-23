@@ -28,6 +28,7 @@ class Timer extends Component {
     constructor(props) {
         super(props);
         const { autolyse, fermentation, proofing, zenith, saf } = props.schedule;
+        this.titleSectionTimer = React.createRef();
         this.state = {
             autolyse,
             fermentation,
@@ -318,6 +319,7 @@ class Timer extends Component {
         const timeTotal = convertMinutsToHuman(totalScopeTimelineMinuts);
 
         const composition = this.props.composition;
+        const classBool = this.props.visibilitySchedule;
 
         const dataForSave = {
             timeTotal,
@@ -331,7 +333,7 @@ class Timer extends Component {
 
         return (
             <Fragment>
-            <section id="defineSchedule">
+            <section ref={this.titleSectionTimer} id="defineSchedule">
                 <Title content="Schedule" class="timer" />
                 <div className={`${timerStyles.wrapper} ${timerStyles.schedule} ${currentCountDown ? `${timerStyles.runningCountDown}` : ""}`}>
                     <div className={timerStyles.label}>
@@ -410,7 +412,7 @@ class Timer extends Component {
                                     <Ext title="fermentedTtl" link="fermentedLink" />
                                     <Note content={<Proofing />}/>
                                 </label>
-                                <input onChange={(e) => this.modifyProofing(e)} value={proofing} type="range" aria-labelledby="proofing" id="proofing" min="120" max="1200" step="5" disabled={currentCountDown} />
+                                <input onChange={(e) => this.modifyProofing(e)} value={proofing} type="range" aria-labelledby="proofing" id="proofing" min="5" max="1200" step="5" disabled={currentCountDown} />
                                 <span><u>{convertMinutsToHuman(proofing)}</u> <span>-></span> 
                                 <Text tid="startBakeAt" />
                                 </span>
@@ -451,6 +453,7 @@ class Timer extends Component {
             </section>
             <Save data={dataForSave} />
             <Timeline
+                visibility={classBool}
                 milestones={milestones}
                 currentCountDown={currentCountDown}
                 hrHour={{hourNow, minutesNow}}

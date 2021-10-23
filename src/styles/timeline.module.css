@@ -9,10 +9,19 @@
     box-sizing: border-box;
     border-radius: 3rem 3rem 0 0;
     box-shadow: 0 0 2rem #000;
+    transition: all 0.3s ease-out;
 }
 
 .board div {
     width: 100%;
+}
+
+.Scheduleinvisible {
+    bottom: -200px;
+}
+
+.Schedulevisible {
+    bottom: 0;
 }
 
 .board .timeline {

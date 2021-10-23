@@ -119,7 +119,6 @@ class Timeline extends Component {
             // Si c'est ok, créons une notification
             audio.currentTime = 0;
             audio.play();
-            console.log("audio", audio);
             new Notification(words[0], {
                 body:words[1],
                 icon:words[2]
@@ -317,7 +316,7 @@ class Timeline extends Component {
         const { dateProofing, dateRest, dateFermentation, dateZenith, dateAutolyse } = this.props.milestones;
 
         return (
-            <div className={timerStyles.board}>
+            <div className={`${timerStyles.board} ${this.props.visibility ? timerStyles.Scheduleinvisible : timerStyles.Schedulevisible}`}>
                 <div className={`${timerStyles.timeline} ${timerStyles[`hover${hoveredStripe}`]}`}>
                     <div className={timerStyles.marker}>{`${hourNow}:${minutesNow}`}</div>
                     <div className={`${timerStyles.marker} ${timerStyles.marker1}`}>

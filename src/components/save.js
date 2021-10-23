@@ -5,6 +5,18 @@ import { convertMinutsToHuman, randomName } from "../functions/tools.js";
 import ModalValid from "./modalValid.js";
 import { Text, FuncText } from '../containers/language';
 
+function createEmptyRecipe(){
+    const initObj = {recipes: []}
+    const toSave = JSON.stringify(initObj);
+    localStorage.setItem("patefolle-recipes", toSave);
+}
+
+function testLocalStorageOnce(){
+    if(localStorage.getItem("patefolle-recipes") === null){
+        createEmptyRecipe();
+    }
+}
+
 class Save extends Component {
     constructor(props) {
         super(props);
@@ -19,6 +31,7 @@ class Save extends Component {
 
     componentDidMount(){
         this.manageNameSuggestion();
+        testLocalStorageOnce();
     }
 
     manageNameSuggestion = () => {
@@ -58,10 +71,7 @@ class Save extends Component {
     }
 
     initLocalStorageObject = () => {
-        const initObj = {recipes: []}
-        const toSave = JSON.stringify(initObj);
-        localStorage.setItem("patefolle-recipes", toSave);
-        console.info("localstorage initialised");
+        createEmptyRecipe();
     }
 
     checkIfRecipeExist = (name) => {
@@ -196,7 +206,12 @@ class Save extends Component {
                                         </ul>
                                     </dd>
                                 </dl>
-                                    <input className={style.submit} value={FuncText('Save')} type="submit" aria-labelledby="submit" onChange={(e) => this.rangeYeast(e)} id="submit" />
+                                    <input 
+                                        className={style.submit} 
+                                        value={FuncText('Save')} 
+                                        type="submit" 
+                                        aria-labelledby="submit" 
+                                        id="submit" />
                             </form>
                         </div>
                         <hr />
