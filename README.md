@@ -21,6 +21,17 @@
 - [x] You can save your recipe. It's stock in session storage.
 - [x] You can share it, all data are available into the url.
 
+### Translations of the feature list
+- Français : Tes propres proportions eau/pâte/levain réglables via des sliders (maths de boulange) • Un planning de minuterie par étape • Un compte à rebours via notifications navigateur (continue après fermeture/réouverture) • Sauvegarde de ta recette (session storage) • Partage : toutes les données sont dans l’URL.
+- Deutsch : Eigene Verhältnisse Wasser/Teig/Sauerteig per Schieberegler (Bäckerprozente) • Ein Timer-Plan je Brotschritt • Countdown über Browser-Benachrichtigungen (läuft weiter nach Schließen/Öffnen) • Rezept speichern (session storage) • Teilen: alle Daten stecken in der URL.
+- Español : Tus proporciones agua/masa/masa madre ajustables con deslizadores (reglas de panadería) • Un horario de temporizador por etapa • Una cuenta atrás con notificaciones del navegador (sigue tras cerrar/abrir) • Guardar tu receta (session storage) • Compartir: todos los datos van en la URL.
+- Slovenščina : Tvoja razmerja voda/testo/droži nastavljiva z drsniki (pekovska pravila) • Časovnik po korakih kruha • Odštevanje prek obvestil (teče naprej po zaprtju/ponovnem odprtju) • Shrani recept (session storage) • Deljenje: vsi podatki so v URL-ju.
+- Latviešu : Savas proporcijas ūdens/mīkla/ieraugs ar slīdņiem (maizes matemātika) • Taimeru grafiks pa soļiem • Atpakaļskaitīšana ar pārlūka paziņojumiem (turpinās pēc aizvēršanas/atvēršanas) • Saglabā recepti (session storage) • Kopīgot: visi dati ir URL adresē.
+- Italiano : Le tue proporzioni acqua/impasto/lievito madre regolabili con slider (baker’s percentages) • Programma di timer per ogni fase • Conto alla rovescia con notifiche del browser (continua dopo chiudi/riapri) • Salva la tua ricetta (session storage) • Condividere: tutti i dati sono nell’URL.
+- Svenska : Egna proportioner vatten/deg/surdeg med reglage (bageriprocent) • Ett timerschema per steg • En nedräkning via webbläsarnotiser (fortsätter efter stängning/öppning) • Spara ditt recept (session storage) • Dela: all data finns i URL:en.
+- Magyar : Saját arányok víz/tészta/kovász csúszkákkal (pék százalékok) • Időzítő ütemterv lépésekre bontva • Visszaszámláló böngészőértesítésekkel (folytatódik bezárás/újranyitás után is) • Recept mentése (session storage) • Megosztás: minden adat az URL-ben.
+- Українська : Власні пропорції вода/тісто/закваска повзунками (пекарські відсотки) • Розклад таймера за етапами • Зворотний відлік через сповіщення (продовжує після закриття/відкриття) • Зберегти рецепт (session storage) • Поділитися: всі дані в URL.
+
 :bread:
 
 ### Framework
