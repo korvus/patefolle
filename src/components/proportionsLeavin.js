@@ -2,20 +2,23 @@ import React, { useContext } from "react";
 import { leavinChoiceContext } from "../containers/leavinChoice";
 import co from "../styles/quantities.module.css";
 import { Text } from "../containers/language";
+import { ingredientsContext } from "../containers/ingredients";
+import { calculateWeights } from "../functions/percents.js";
 
 const ProportionsLeavin = (props) => {
 
     const { percentWaterLeavin, updateRatio, displayxp } = useContext(leavinChoiceContext);
+    const { measures } = useContext(ingredientsContext);
 
-    const {weightS} = props.dataLeavin;
-    const weightWater = percentWaterLeavin*weightS/100;
+    const { weightSourdough } = calculateWeights(measures, percentWaterLeavin);
+    const weightWater = percentWaterLeavin*weightSourdough/100;
 
     return (
             <section className={`${displayxp ? "" : "hide"} ${co.ratioWater}`}>
                     <span className={co.ratiosLeavin}>
                       <span>
-                        {percentWaterLeavin}% <Text tid="Water" />
-                        <b>({weightWater}gr)</b>
+                      <b>{percentWaterLeavin}% <Text tid="Water" /></b>
+                        ({weightWater}gr)
                       </span>
                       <input
                         value={percentWaterLeavin}

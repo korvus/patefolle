@@ -1,17 +1,21 @@
 import React, { useContext } from "react";
 import { leavinChoiceContext } from "../containers/leavinChoice";
+import { ingredientsContext } from "../containers/ingredients";
+import { calculateWeights } from "../functions/percents.js";
 import proportionStyle from "../styles/proportions.module.css";
 import { Text } from "../containers/language";
 
 const Proportions = (props) => {
 
-    const { weight, weightW, weightF, weightSalt, weightS } = props.composition;
+    const { measures } = useContext(ingredientsContext);
     const { percentWaterLeavin } = useContext(leavinChoiceContext);
 
-    const percentS = weightS*100/weight;
-    const percentW = weightW*100/weight;
-    const percentF = weightF*100/weight;
-    const percentSalt = weightSalt*100/weight;
+    const { weightSalt, weightFlour, weightSourdough, weightWater } = calculateWeights(measures, percentWaterLeavin);
+
+    const percentS = weightSourdough*100/measures.weight;
+    const percentW = weightWater*100/measures.weight;
+    const percentF = weightFlour*100/measures.weight;
+    const percentSalt = weightSalt*100/measures.weight;
 
     return (
       <section

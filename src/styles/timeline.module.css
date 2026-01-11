@@ -75,22 +75,19 @@
     padding-right: 0.5rem;
     font-family: Arial, Helvetica, sans-serif;
     line-height: 3;
-    color: #fff;   
+    color: #fff;
 }
 
-.stripe1{background: #92924b;}
-.stripe2{background: #b1b188;}
-.stripe3{background: #e8ba71;}
-.stripe4{background: #c5c5bf;}
-.stripe5{background: #dedede;}
+.wrapperStripe .stripe:nth-child(0n+1){background: #92924b;}
+.wrapperStripe .stripe:nth-child(1n+1){background: #b1b188;}
+.wrapperStripe .stripe:nth-child(2n+1){background: #e8ba71;}
+.wrapperStripe .stripe:nth-child(3n+1){background: #c5c5bf;}
+.wrapperStripe .stripe:nth-child(4n+1){background: #dedede;}
 
 
+.hovered{z-index: 2;}
 
-.hover1 .marker2{z-index: 2;}
-.hover2 .marker3{z-index: 2;}
-.hover3 .marker4{z-index: 2;}
-.hover4 .marker5{z-index: 2;}
-.hover5 .marker1{z-index: 2;}
+.neutral {background: transparent;}
 
 .board .countdown {
     height: 5rem;
@@ -113,7 +110,6 @@
     background: #bbbb2b;
 }
 
-
 .board .marker {
     position: absolute;
     transform: rotate(-45deg);
@@ -127,11 +123,12 @@
     box-shadow: 0px 2px 2px #555;
 }
 
-.board .marker1 {
+.board .reversedMarker {
     transform-origin: right;
     transform: rotate(45deg);
     right: -1rem;
 }
+
 
 .board .marker span {
     color: #888;

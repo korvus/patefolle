@@ -13,11 +13,37 @@ const getAlreadyRegistred = () => {
 
 const recipeInsideStorage = getAlreadyRegistred();
 
+
+
 const Recipes = (props) => {
 
     /* Just usefull for refresh the component when lang is changed */
+
     const { userLanguage } = useContext(LanguageContext);
     const [existing, setExisting] = useState(recipeInsideStorage);
+
+    const displayRecipeV1 = (obj, a) => {
+        const title = `${obj.title} :
+        - ${obj.weight}g 
+        - ${obj.percentHydra}% ${FuncText("hydration")}
+        - ${obj.percentLeavin}% ${FuncText("leaven")} 
+        ●˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗●
+        - ${convertMinutsToHuman(obj.zenith)} ${FuncText("raisingLeavin")} 
+        - ${convertMinutsToHuman(obj.autolyse)} ${FuncText("ofAutolyse")}
+        - ${convertMinutsToHuman(obj.fermentation)} ${FuncText("BulkFermentation")} ${obj.saf && obj.saf.length > 0  && `${FuncText("including")} ${obj.saf.length} ${FuncText("StretchAFold")}`} 
+        - ${convertMinutsToHuman(obj.proofing)} ${FuncText("proofing")}`;
+    
+        return <li className="recipe" key={a} data-lang={userLanguage}>
+              <span data-index={a} role="presentation" onFocus={(e) => trigger(e)} onClick={(e) => trigger(e)} title={title} className="recipe">
+                  <b>{obj.title}</b> - [ {obj.weight}g ● {obj.percentHydra}% {FuncText("hydration")} ● {obj.percentLeavin}% {FuncText("leaven")} ]
+                  [ {convertMinutsToHuman(obj.zenith)} {FuncText("raisingLeavin")} ● {convertMinutsToHuman(obj.autolyse)} {FuncText("ofAutolyse")} ● {convertMinutsToHuman(obj.fermentation)} {FuncText("BulkFermentation")} ●{` `} 
+                  {obj.saf && obj.saf.length > 0 && `${obj.saf.length} ${FuncText("StretchAFold")} ● `}
+                  {convertMinutsToHuman(obj.proofing)} {FuncText("proofing")} ]
+              </span>
+              <span data-index={a} role="presentation" onFocus={(e) => deleteRecipe(e)} onClick={(e) => deleteRecipe(e)} title={FuncText("deleteThisRecipe")} className="trash">Trash</span>
+        </li>;
+    }
+    
 
     const deleteRecipe = (e) => {
         const keyId = parseInt(e.target.dataset.index);
@@ -36,27 +62,16 @@ const Recipes = (props) => {
     
     for (let a = 0; a < existing.length; a++) {
 
-            const title = `${existing[a].title} :
-    - ${existing[a].weight}g 
-    - ${existing[a].percentHydra}% ${FuncText("hydration")}
-    - ${existing[a].percentLeavin}% ${FuncText("leaven")} 
-    ●˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗˗●
-    - ${convertMinutsToHuman(existing[a].zenith)} ${FuncText("raisingLeavin")} 
-    - ${convertMinutsToHuman(existing[a].autolyse)} ${FuncText("ofAutolyse")}
-    - ${convertMinutsToHuman(existing[a].fermentation)} ${FuncText("BulkFermentation")} ${existing[a].saf && existing[a].saf.length > 0  && `${FuncText("including")} ${existing[a].saf.length} ${FuncText("StretchAFold")}`} 
-    - ${convertMinutsToHuman(existing[a].proofing)} ${FuncText("proofing")}`;
+
+        if(!Object.hasOwn(existing[a], "ingredients")){
+            recipe.push(displayRecipeV1(existing[a], a));
+        } else {
+            console.log("recipe is V2");
+        }
 
 
-          recipe.push(
-          <li className="recipe" key={a} data-lang={userLanguage}>
-            <span data-index={a} role="presentation" onFocus={(e) => trigger(e)} onClick={(e) => trigger(e)} title={title} className="recipe">
-                <b>{existing[a].title}</b> - [ {existing[a].weight}g ● {existing[a].percentHydra}% {FuncText("hydration")} ● {existing[a].percentLeavin}% {FuncText("leaven")} ]
-                [ {convertMinutsToHuman(existing[a].zenith)} {FuncText("raisingLeavin")} ● {convertMinutsToHuman(existing[a].autolyse)} {FuncText("ofAutolyse")} ● {convertMinutsToHuman(existing[a].fermentation)} {FuncText("BulkFermentation")} ●{` `} 
-                {existing[a].saf && existing[a].saf.length > 0 && `${existing[a].saf.length} ${FuncText("StretchAFold")} ● `}
-                {convertMinutsToHuman(existing[a].proofing)} {FuncText("proofing")} ]
-            </span>
-            <span data-index={a} role="presentation" onFocus={(e) => deleteRecipe(e)} onClick={(e) => deleteRecipe(e)} title={FuncText("deleteThisRecipe")} className="trash">Trash</span>
-          </li>)
+
+
     }
 
     return (

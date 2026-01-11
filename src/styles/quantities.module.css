@@ -111,9 +111,12 @@
     margin-top: 2rem;
     border-radius: 1rem;
     padding: 1rem;
+    
 }
 
+
 .ratioWater b {
+    background: none;
     margin-left: 1rem;
     font-size: 2rem;
     background: rgba(250,250,250,0.5);
