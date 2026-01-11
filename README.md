@@ -1,4 +1,4 @@
-# [Pâte folle](https://patefolle.vercel.app/)
+# [Pâte folle](https://patefolle.200.work)
 
 ## Setup your own baking recipe and countdown.
 
