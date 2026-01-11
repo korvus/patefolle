@@ -2,6 +2,17 @@
 
 ## Setup your own baking recipe and countdown.
 
+### Translations of the tagline
+- Français : Crée ta propre recette de boulange et son compte à rebours.
+- Deutsch : Erstelle dein eigenes Brotrezept und einen Countdown.
+- Español : Crea tu propia receta de pan y su cuenta atrás.
+- Slovenščina : Nastavi svoj recept za peko in odštevanje.
+- Latviešu : Izveido savu maizes recepti un atpakaļskaitīšanu.
+- Italiano : Imposta la tua ricetta di pane e il relativo conto alla rovescia.
+- Svenska : Skapa ditt eget brödrecept och en nedräkning.
+- Magyar : Állítsd össze a saját kenyérreceptedet és az időzítőt.
+- Українська : Налаштуй власний рецепт хліба та таймер відліку.
+
 ### What can I do exactly?
 
 - [x] Your own proportions between water, dough and leavin. You can setting it up with some sliders. I'am based on baking mathematics rules.
