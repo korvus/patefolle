@@ -25,3 +25,6 @@ yarn-error.log*
 /draft
 .vercel
 .vscode
+.github
+.gitignore
+yarn.lock
