@@ -60,6 +60,12 @@ const randomInt = (min, max) => { // min and max included
     return Math.floor(Math.random() * (max - min) + min);
 }
 
+// Ensure we always return a language key that exists in the provided map
+const resolveLanguageKey = (langMap) => {
+    const lang = getCurrentLanguage();
+    return langMap[lang] ? lang : "en";
+}
+
 const adj = {
     "en": ["First", "Cool", "My", "mad", "crazy", "Awesome", "Sweet", "Incredible", "Custom", "Pimped", "French"],
     "fr": ["Recette", "Pâte", "Boule", "Baguette"]
@@ -98,19 +104,17 @@ const stretchTranslations = {
 }
 
 export const stretchAndFoldDatas = () => {
-    const lang = getCurrentLanguage();
-    const safSentences = stretchTranslations;
-    return safSentences[lang];
+    const lang = resolveLanguageKey(stretchTranslations);
+    return stretchTranslations[lang];
 }
 
 export const steps = () => {
-    const lang = getCurrentLanguage();
-    const steps = stepsLangs;
-    return steps[lang];
+    const lang = resolveLanguageKey(stepsLangs);
+    return stepsLangs[lang];
 }
 
 export const randomName = () => {
-    const lang = getCurrentLanguage();
+    const lang = resolveLanguageKey(adj);
     const lengthAdj = adj[lang].length;
     const lengthNoun = noun[lang].length;
     const randomAdj = randomInt(0, lengthAdj);

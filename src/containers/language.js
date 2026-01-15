@@ -47,5 +47,11 @@ export function getCurrentLanguage () {
     if (!defaultLanguage) {
       defaultLanguage = window.navigator.language.substring(0, 2);
     }
+
+    // Fallback to English if the detected language is not supported
+    if (!dictionaryList[defaultLanguage]) {
+      defaultLanguage = 'en';
+    }
+
     return defaultLanguage;
 }
